@@ -22,13 +22,25 @@ import {
 import {
   ChildProcess
 } from "child_process"
+import {
+  ALLState,
+  apiGetAccountAssets,
+  apiGetAccountNonce,
+  apiGetGasPrices,
+  connect, createSession,
+  IAssetData,
+  IGasPrices, KillSession, pollingTransactionStatus, sendTransaction
+} from "./WalletApi";
+import WalletConnect from "@walletconnect/client";
+import {Network} from "../react/types";
 
 export interface IElectronAPI {
   shellOpenExternal: (url: string, options?: Electron.OpenExternalOptions | undefined) => Promise<void>,
   shellShowItemInFolder: (fullPath: string) => void,
   clipboardWriteText: (ext: string, type?: "selection" | "clipboard" | undefined) => void,
+  clipboardClear: (type?: "selection" | "clipboard" | undefined) => void,
   ipcRendererSendClose: () => void,
-  invokeShowOpenDialog: (options: OpenDialogOptions) => Promise<OpenDialogReturnValue>
+  invokeShowOpenDialog: (options: OpenDialogOptions) => Promise<OpenDialogReturnValue>,
 }
 
 export interface IEth2DepositAPI {
@@ -36,6 +48,24 @@ export interface IEth2DepositAPI {
   generateKeys: (mnemonic: string, index: number, count: number, network: string,
     password: string, eth1_withdrawal_address: string, folder: string) => Promise<void>,
   validateMnemonic: (mnemonic: string) => Promise<void>
+}
+
+export interface IDepositAPI {
+  getExistingDepositsForPubkeys: (fileData: any[], chain: String | undefined) => Promise<any>,
+  validateDepositKey: (fileData: any[], chain: String | undefined) => Promise<boolean>
+}
+
+export interface IEncryptAPI {
+  doEncrypt: (publicKey: string, keyPassword: string) => string | false;
+}
+
+export interface IWalletAPI{
+  connect: () => Promise<string>,
+  killSession : () => void,
+  getWalletStatus: () => any,
+  sendTransaction: (pubkey: string, withdrawal_credentials: string, signature: string, deposit_data_root: string, amount: number, network: Network) => any,
+  testSendTransaction : () => any
+  fetchTransactionStatus: (txhash: string, network: Network) => Promise<any>;
 }
 
 export interface IBashUtilsAPI {
@@ -53,6 +83,9 @@ declare global {
     electronAPI: IElectronAPI,
     eth2Deposit: IEth2DepositAPI,
     bashUtils: IBashUtilsAPI,
-    web3Utils: IWeb3UtilsAPI
+    web3Utils: IWeb3UtilsAPI,
+    deposit: IDepositAPI,
+    encrypt: IEncryptAPI,
+    walletApi: IWalletAPI,
   }
 }

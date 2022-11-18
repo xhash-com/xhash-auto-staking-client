@@ -2,8 +2,9 @@ import { BackgroundLight, } from '../colors';
 import { FormControl, FormControlLabel, Radio, RadioGroup, Button, Divider, Typography } from '@material-ui/core';
 import React, { Dispatch, SetStateAction } from 'react';
 
-import { Network } from '../types';
+import {LanguageEnum, Network} from '../types';
 import styled from 'styled-components';
+import {Language} from "../language/Language";
 
 const Container = styled.div`
   display: flex;
@@ -39,11 +40,12 @@ type NetworkPickerProps = {
   handleCloseNetworkModal: (event: object, reason: string) => void,
   setNetwork: Dispatch<SetStateAction<Network>>,
   network: Network,
+  language: LanguageEnum,
 }
 
 /**
  * This is the network picker modal component where the user selects the desired network.
- * 
+ *
  * @param props.handleCloseNetworkModal function to handle closing the network modal
  * @param props.setNetwork update the selected network
  * @param props.network the selected network
@@ -64,16 +66,15 @@ export const NetworkPicker = (props: NetworkPickerProps) => {
 
   return (
     <Container>
-      <Header>Network</Header>
+      <Header><Language id="Network" language={props.language}/></Header>
       <form onSubmit={closePicker} style={{textAlign: 'center'}}>
         <div>
           <FormControl focused>
             <RadioGroup aria-label="gender" name="gender1" value={props.network} onChange={networkChanged}>
               <FormControlLabel value={Network.MAINNET} control={<Radio />} label={Network.MAINNET} />
               <Divider />
-              <SubHeader>Testnets</SubHeader>
+              <SubHeader><Language id="Testnets" language={props.language}/></SubHeader>
               <FormControlLabel value={Network.GOERLI} control={<Radio />} label={goerliLabel} />
-              <FormControlLabel value={Network.ROPSTEN} control={<Radio />} label={Network.ROPSTEN} />
             </RadioGroup>
           </FormControl>
         </div>

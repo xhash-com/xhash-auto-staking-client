@@ -2,6 +2,8 @@ import { Button, Fade, FormControlLabel, Grid, Switch, TextField, Tooltip, Typog
 import React, { Dispatch, SetStateAction, useState } from 'react';
 import styled from "styled-components";
 import { errors, tooltips } from '../../constants';
+import {LanguageEnum} from "../../types";
+import {Language, LanguageFunc} from "../../language/Language";
 
 type GenerateKeysProps = {
   numberOfKeys: number,
@@ -20,7 +22,8 @@ type GenerateKeysProps = {
   startingIndexError: boolean,
   showAdvanced: boolean,
   setShowAdvanced: Dispatch<SetStateAction<boolean>>,
-  onFinish: () => void
+  onFinish: () => void,
+  language: LanguageEnum,
 }
 
 const StyledTextField = styled(TextField)`
@@ -36,12 +39,12 @@ const AddressTextField = styled(TextField)`
 
 /**
  * This page gathers data about the keys to generate for the user
- * 
+ *
  * @param props self documenting parameters passed in
- * @returns 
+ * @returns
  */
 const KeyInputs = (props: GenerateKeysProps) => {
-  
+
   const handleToggleShowAdvanced = () => {
     props.setShowAdvanced(!props.showAdvanced);
     if (!props.showAdvanced) {
@@ -72,53 +75,53 @@ const KeyInputs = (props: GenerateKeysProps) => {
     <Grid container direction="column" spacing={2}>
       <Grid item xs={12}>
         <Typography variant="body1">
-          Nice!  Your Secret Recovery Phrase is verified. Now let's collect some info about the keys to create:
+          <Language language={props.language} id="Collect_Some_Info"/>
         </Typography>
       </Grid>
       <Grid container item direction="row" justifyContent="center" alignItems="center" spacing={2} xs={12}>
         <Grid item>
-          <Tooltip title={tooltips.NUMBER_OF_KEYS}>
+          <Tooltip title={LanguageFunc("NUMBER_OF_KEYS", props.language)}>
             <StyledTextField
               id="number-of-keys"
-              label="Number of New Keys"
+              label={LanguageFunc("Number_Of_New_Keys", props.language)}
               variant="outlined"
               type="number"
               value={props.numberOfKeys}
               onChange={updateNumberOfKeys}
               InputProps={{ inputProps: { min: 1, max: 1000 } }}
               error={props.numberOfKeysError}
-              helperText={ props.numberOfKeysError ? errors.NUMBER_OF_KEYS : ""}
+              helperText={ props.numberOfKeysError ? LanguageFunc("NUMBER_OF_KEYS", props.language) : ""}
             />
           </Tooltip>
         </Grid>
         { props.showIndexInput &&
           <Grid item>
-            <Tooltip title={tooltips.STARTING_INDEX}>
+            <Tooltip title={LanguageFunc("STARTING_INDEX", props.language)}>
               <StyledTextField
                 id="index"
-                label="Amount of Existing (starting index)"
+                label={LanguageFunc("Amount_Of_Existing", props.language)}
                 variant="outlined"
                 type="number"
                 value={props.index}
                 onChange={updateIndex}
                 InputProps={{ inputProps: { min: 0 } }}
                 error={props.startingIndexError}
-                helperText={props.startingIndexError ? errors.STARTING_INDEX : ""}
+                helperText={props.startingIndexError ? LanguageFunc("STARTING_INDEX", props.language) : ""}
               />
             </Tooltip>
           </Grid>
         }
         <Grid item>
-          <Tooltip title={tooltips.PASSWORD}>
+          <Tooltip title={LanguageFunc("PASSWORD", props.language)}>
             <StyledTextField
               id="password"
-              label="Password"
+              label={LanguageFunc("Password", props.language)}
               type="password"
               variant="outlined"
               value={props.password}
               onChange={updatePassword}
               error={props.passwordStrengthError}
-              helperText={props.passwordStrengthError ? errors.PASSWORD_STRENGTH : ""}
+              helperText={props.passwordStrengthError ? LanguageFunc("PASSWORD_STRENGTH", props.language) : ""}
             />
           </Tooltip>
         </Grid>
@@ -126,26 +129,26 @@ const KeyInputs = (props: GenerateKeysProps) => {
       <Grid item>
         <FormControlLabel
           control={<Switch checked={props.showAdvanced} onChange={handleToggleShowAdvanced} color="default" size="small" />}
-          label="Use Advanced Inputs"
+          label={LanguageFunc("Use_Advanced_Inputs", props.language)}
         />
       </Grid>
       <Grid item>
           <Fade in={props.showAdvanced} >
             <Grid container item direction="row" justifyContent="center" alignItems="center" spacing={2} xs={12}>
               <Grid item>
-                <Tooltip title={tooltips.ETH1_WITHDRAW_ADDRESS}>
+                <Tooltip title={LanguageFunc("ETH1_WITHDRAW_ADDRESS", props.language)}>
                   <AddressTextField
                     id="eth1-withdraw-address"
-                    label="Ethereum Withdrawal Address (Optional)"
+                    label={LanguageFunc("Ethereum_Withdrawal_Address", props.language)}
                     variant="outlined"
                     value={props.withdrawalAddress}
                     onChange={updateEth1WithdrawAddress}
                     error={props.withdrawalAddressFormatError}
-                    helperText={ props.withdrawalAddressFormatError ? errors.ADDRESS_FORMAT_ERROR : ""}
+                    helperText={ props.withdrawalAddressFormatError ? LanguageFunc("ADDRESS_FORMAT_ERROR", props.language) : ""}
                   />
                 </Tooltip>
                 <Typography variant="body1">
-                  Please ensure that you have control over this address.
+                  <Language language={props.language} id="TIPS"/>
                 </Typography>
               </Grid>
             </Grid>

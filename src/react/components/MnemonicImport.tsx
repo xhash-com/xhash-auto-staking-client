@@ -4,6 +4,8 @@ import styled from "styled-components";
 import ValidatingMnemonic from './MnemonicImportFlow/1-ValidatingMnemonic';
 import { errors, MNEMONIC_LENGTH } from "../constants";
 import StepNavigation from './StepNavigation';
+import {LanguageEnum} from "../types";
+import {Language, LanguageFunc} from "../language/Language";
 
 const ContentGrid = styled(Grid)`
   height: 320px;
@@ -14,12 +16,13 @@ type Props = {
   mnemonic: string,
   setMnemonic: Dispatch<SetStateAction<string>>,
   onStepBack: () => void,
-  onStepForward: () => void
+  onStepForward: () => void,
+  language: LanguageEnum,
 }
 
 /**
  * This is the Mnemonic Import flow
- * 
+ *
  * @param props data and functions passed in for usage, the names are self documenting
  * @returns mnemonic import components to render
  */
@@ -42,7 +45,7 @@ const MnemonicImport: FC<Props> = (props): ReactElement => {
 
     if (mnemonicArray.length != MNEMONIC_LENGTH) {
       setMnemonicError(true);
-      setMnemonicErrorMsg(errors.MNEMONIC_FORMAT);
+      setMnemonicErrorMsg(LanguageFunc("MNEMONIC_FORMAT", props.language));
     } else {
 
       setStep(step + 1);
@@ -55,7 +58,7 @@ const MnemonicImport: FC<Props> = (props): ReactElement => {
         setMnemonicError(true);
         setMnemonicErrorMsg(errorMsg);
       })
-      
+
     }
   }
 
@@ -70,7 +73,7 @@ const MnemonicImport: FC<Props> = (props): ReactElement => {
       case 0: return (
         <TextField
             id="mnemonic-input"
-            label="Type your Secret Recovery Phrase here"
+            label={LanguageFunc("Type_Your_Secret_Recovery_Phrase", props.language)}
             multiline
             fullWidth
             rows={4}
@@ -85,6 +88,7 @@ const MnemonicImport: FC<Props> = (props): ReactElement => {
       );
       case 1: return (
         <ValidatingMnemonic
+            language={props.language}
         />
       );
       default:
@@ -96,7 +100,7 @@ const MnemonicImport: FC<Props> = (props): ReactElement => {
     <Grid container direction="column" spacing={2}>
       <Grid item>
         <Typography variant="h1">
-          Import Secret Recovery Phrase
+          <Language language={props.language} id="Import_Secret_Recovery_Phrase"/>
         </Typography>
       </Grid>
       <ContentGrid item container justifyContent="center">
@@ -105,12 +109,12 @@ const MnemonicImport: FC<Props> = (props): ReactElement => {
         </Grid>
       </ContentGrid>
       {/* props.children is the stepper */}
-      {props.children}
       <StepNavigation
+        children={props.children}
         onPrev={props.onStepBack}
         onNext={onImport}
-        backLabel="Back"
-        nextLabel="Import"
+        backLabel={LanguageFunc("Back", props.language)}
+        nextLabel={LanguageFunc("Import", props.language)}
         disableBack={step === 1}
         disableNext={disableImport || step === 1}
       />

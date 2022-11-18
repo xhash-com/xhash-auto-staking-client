@@ -1,11 +1,12 @@
 import { Grid, Typography } from '@material-ui/core';
 import React, { FC, ReactElement, useState, Dispatch, SetStateAction, useEffect } from 'react';
 import styled from 'styled-components';
-import { Network } from '../types';
+import {LanguageEnum, Network} from '../types';
 import GenerateMnemonic from './MnemonicGenerationFlow/0-GenerateMnemonic';
 import ShowMnemonic from './MnemonicGenerationFlow/1-2-ShowMnemonic';
 import VerifyMnemonic from './MnemonicGenerationFlow/3-VerifyMnemonic';
 import StepNavigation from './StepNavigation';
+import {Language} from "../language/Language";
 
 const ContentGrid = styled(Grid)`
   height: 320px;
@@ -19,13 +20,14 @@ type Props = {
   setMnemonicToVerify: Dispatch<SetStateAction<string>>,
   onStepBack: () => void,
   onStepForward: () => void,
-  network: Network
+  network: Network,
+  language: LanguageEnum,
 }
 
 /**
  * This is the wizard the user will navigate to generate their mnemonic.
  * It uses the notion of a 'step' to render specific pages within the flow.
- * 
+ *
  * @param props.mnemonic the mnemonic
  * @param props.setMnemonic function to update the mnemonic
  * @param props.mnemonicToVerify the user input mnemonic to check against the actual mnemonic
@@ -61,13 +63,13 @@ const MnemonicGenerationWizard: FC<Props> = (props): ReactElement => {
   const prevLabel = () => {
     switch (step) {
       case 0:
-        return "Back";
+        return <Language language={props.language} id="Back"/>;
       case 1:
-        return "Back";
+        return <Language language={props.language} id="Back"/>;
       case 2:
-        return "Back";
+        return <Language language={props.language} id="Back"/>;
       case 3:
-        return "Back";
+        return <Language language={props.language} id="Back"/>;
     }
   }
 
@@ -78,13 +80,13 @@ const MnemonicGenerationWizard: FC<Props> = (props): ReactElement => {
   const nextLabel = () => {
     switch (step) {
       case 0:
-        return "Create";
+        return <Language language={props.language} id="Create"/>;
       case 1:
-        return "Next";
+        return <Language language={props.language} id="Next"/>;
       case 2:
-        return "I'm sure";
+        return <Language language={props.language} id="Sure"/>;
       case 3:
-        return "Check";
+        return <Language language={props.language} id="Check"/>;
     }
   }
 
@@ -123,10 +125,10 @@ const MnemonicGenerationWizard: FC<Props> = (props): ReactElement => {
   const content = () => {
     switch(step) {
       case 0: return (
-        <GenerateMnemonic setGenerateError={setGenerateError} generateError={generateError} setGenerateErrorMsg={setGenerateErrorMsg} generateErrorMsg={generateErrorMsg} />
+        <GenerateMnemonic setGenerateError={setGenerateError} generateError={generateError} setGenerateErrorMsg={setGenerateErrorMsg} generateErrorMsg={generateErrorMsg} language={props.language}/>
       );
       case 1: case 2: return (
-        <ShowMnemonic showCopyWarning={step === 2} mnemonic={props.mnemonic} network={props.network} />
+        <ShowMnemonic showCopyWarning={step === 2} mnemonic={props.mnemonic} network={props.network} language={props.language}/>
       );
       case 3: return (
         <VerifyMnemonic
@@ -136,6 +138,7 @@ const MnemonicGenerationWizard: FC<Props> = (props): ReactElement => {
           onVerifyMnemonic={verifyMnemonic}
           network={props.network}
           mnemonic={props.mnemonic}
+          language={props.language}
         />
       );
       default:
@@ -148,7 +151,7 @@ const MnemonicGenerationWizard: FC<Props> = (props): ReactElement => {
     <Grid container direction="column" spacing={2}>
       <Grid item>
         <Typography variant="h1">
-          Create Secret Recovery Phrase
+          <Language language={props.language} id="Create_Secret_Recovery_Phrase"/>
         </Typography>
       </Grid>
       <ContentGrid item container>
@@ -157,8 +160,8 @@ const MnemonicGenerationWizard: FC<Props> = (props): ReactElement => {
         </Grid>
       </ContentGrid>
       {/* props.children is the stepper */}
-      {props.children}
       <StepNavigation
+        children={props.children}
         onPrev={prevClicked}
         onNext={nextClicked}
         backLabel={prevLabel()}

@@ -1,12 +1,15 @@
 import React, { FC, ReactElement, Dispatch, SetStateAction } from 'react';
 import { Box, Grid, Link, Typography } from '@material-ui/core';
 import styled from 'styled-components';
+import {LanguageEnum} from "../../types";
+import {Language} from "../../language/Language";
 
 type GenerateMnemonicProps = {
   setGenerateError: Dispatch<SetStateAction<boolean>>,
   generateError: boolean,
   setGenerateErrorMsg: Dispatch<SetStateAction<string>>,
   generateErrorMsg: string,
+  language: LanguageEnum,
 }
 
 const LoudText = styled.span`
@@ -15,9 +18,9 @@ const LoudText = styled.span`
 
 /**
  * This page initiates the mnemonic generation flow.  It displays info and creates the mnemonic.
- * 
+ *
  * @param props the data and functions passed in, they are self documenting
- * @returns 
+ * @returns
  */
 const GenerateMnemonic: FC<GenerateMnemonicProps> = (props): ReactElement => {
   return (
@@ -26,17 +29,25 @@ const GenerateMnemonic: FC<GenerateMnemonicProps> = (props): ReactElement => {
       <Grid item xs={10}>
         <Box sx={{ m: 2 }}>
           <Typography variant="body1" align="left">
-            In this step, we'll generate a Secret Recovery Phrase (traditionally referred to as a "mnemonic") and a set of validator keys for you. For more information, visit: https://kb.beaconcha.in/ethereum-2-keys
+            <Language language={props.language} id="Paragraph_1"/>
           </Typography>
         </Box>
         <Box sx={{ m: 2 }}>
           <Typography variant="body1" align="left" gutterBottom>
-            It is <b>very</b> important to <LoudText>keep both your secret recovery phrase and your validator keys safe and secure</LoudText> as you will need them to retrieve your funds later. Anybody with access to these will also be able to steal your funds! For tips on storage, see: https://www.ledger.com/blog/how-to-protect-your-seed-phrase
+            <Language language={props.language} id="Paragraph_2_1"/>
+            <b>
+              <Language language={props.language} id="Paragraph_2_2"/>
+            </b>
+            <Language language={props.language} id="Paragraph_2_3"/>
+            <LoudText>
+              <Language language={props.language} id="Paragraph_2_4"/>
+            </LoudText>
+            <Language language={props.language} id="Paragraph_2_5"/>
           </Typography>
         </Box>
         <Box sx={{ m: 2 }}>
           <Typography variant="body1" align="left" gutterBottom>
-            We recommend running Wagyu Key Gen from an offline machine. One way to do this is to move the application to a USB stick, plug it in to an offline machine, and run it from there.
+            <Language language={props.language} id="Paragraph_3"/>
           </Typography>
         </Box>
         { props.generateError &&

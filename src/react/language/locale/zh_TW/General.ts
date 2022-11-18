@@ -1,0 +1,25 @@
+const General = {
+  "Back": "返回",
+  "Create": "創建",
+  "Next": "下一步",
+  "Sure": "我確定",
+  "Check": "檢查",
+  "Create_Keys": "創建密鑰",
+  "No_Component_Step": "此步驟沒有組件",
+  "Browse": "瀏覽",
+  "Skip": "跳過",
+  "Address": "地址",
+  "Network":"網絡",
+  "Balance": "餘額",
+  "Import Secret Recovery Phrase": "導入助記詞",
+  "Create Secret Recovery Phrase": "創建助記詞",
+  "Configure Validator Keys": "配置驗證者密鑰",
+  "Create Validator Key Files": "創建驗證者密鑰文件",
+  "Keys created": "已創建密鑰",
+  "Deposit": "存款",
+  "Upload keystore to XHash": "上傳keystore到XHash",
+  "No_Account": "沒有帳戶？ ",
+  "Sign_Up": "注册",
+}
+
+export default General

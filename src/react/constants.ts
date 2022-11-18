@@ -11,6 +11,7 @@ export const errors = {
 	FOLDER: "Please select a folder.",
 	FOLDER_DOES_NOT_EXISTS: "Folder does not exist. Select an existing folder.",
 	FOLDER_IS_NOT_WRITABLE: "Cannot write in this folder. Select a folder in which you have write permission.",
+	EMAIL_ERROR: "Please enter a valid email address",
 };
 
 export const MNEMONIC_LENGTH = 24;
@@ -21,6 +22,7 @@ export const tooltips = {
 	PASSWORD: "Pick a strong password (at least 8 characters) that will be used to protect your keys.",
 	STARTING_INDEX: "Each key is created sequentially, so we need to know how many you've created with this Secret Recovery Phrase in the past in order to create some new ones for you.",
 	ETH1_WITHDRAW_ADDRESS: "An optional Ethereum address for the withdrawal credentials.",
+	EMAIL: "Enter your email account on XHash",
 };
 
 export const stepLabels = {
@@ -28,5 +30,7 @@ export const stepLabels = {
 	[StepKey.MnemonicGeneration]: 'Create Secret Recovery Phrase',
 	[StepKey.KeyConfiguration]: 'Configure Validator Keys',
 	[StepKey.KeyGeneration]: 'Create Validator Key Files',
-	[StepKey.Finish]: 'Finish'
+	[StepKey.Finish]: 'Keys created',
+	[StepKey.Deposit]: 'Deposit',
+	[StepKey.Upload]: 'Upload keystore to XHash'
 };

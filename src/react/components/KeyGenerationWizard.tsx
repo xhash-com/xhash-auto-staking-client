@@ -5,8 +5,9 @@ import SelectFolder from './KeyGeneratioinFlow/2-SelectFolder';
 import CreatingKeys from './KeyGeneratioinFlow/3-CreatingKeys';
 import KeysCreated from './KeyGeneratioinFlow/4-KeysCreated';
 import StepNavigation from './StepNavigation';
-import { Network } from '../types';
+import {LanguageEnum, Network} from '../types';
 import { errors } from '../constants';
+import {Language, LanguageFunc} from "../language/Language";
 
 const ContentGrid = styled(Grid)`
   height: 320px;
@@ -24,12 +25,13 @@ type Props = {
   password: string,
   folderPath: string,
   setFolderPath: Dispatch<SetStateAction<string>>,
+  language: LanguageEnum,
 }
 
 /**
  * This is the wizard the user will navigate to generate their keys.
  * It uses the notion of a 'step' to render specific pages within the flow.
- * 
+ *
  * @param props.onStepBack function to execute when stepping back
  * @param props.onStepForward function to execute when stepping forward
  * @param props.network network the app is running for
@@ -47,11 +49,11 @@ const KeyGenerationWizard: FC<Props> = (props): ReactElement => {
   const [folderError, setFolderError] = useState(false);
   const [folderErrorMsg, setFolderErrorMsg] = useState("");
   const [modalDisplay, setModalDisplay] = useState(false);
-  
+
   const prevLabel = () => {
     switch (step) {
       case 0:
-        return "Back";
+        return <Language language={props.language} id="Back"/>;
       case 1:
         return ""; // no back button
     }
@@ -76,7 +78,7 @@ const KeyGenerationWizard: FC<Props> = (props): ReactElement => {
   const nextLabel = () => {
     switch (step) {
       case 0:
-        return "Create";
+        return <Language language={props.language} id="Create"/>;
       case 1:
         return ""; // no next button
     }
@@ -93,14 +95,14 @@ const KeyGenerationWizard: FC<Props> = (props): ReactElement => {
           window.bashUtils.doesDirectoryExist(props.folderPath)
             .then((exists) => {
               if (!exists) {
-                setFolderErrorMsg(errors.FOLDER_DOES_NOT_EXISTS);
+                setFolderErrorMsg(LanguageFunc("FOLDER_DOES_NOT_EXISTS", props.language));
                 setFolderError(true);
               } else {
 
                 window.bashUtils.isDirectoryWritable(props.folderPath)
                   .then((writable) => {
                     if (!writable) {
-                      setFolderErrorMsg(errors.FOLDER_IS_NOT_WRITABLE);
+                      setFolderErrorMsg(LanguageFunc("FOLDER_IS_NOT_WRITABLE", props.language));
                       setFolderError(true);
                     } else {
                       setStep(step + 1);
@@ -112,7 +114,7 @@ const KeyGenerationWizard: FC<Props> = (props): ReactElement => {
 
         } else {
           setFolderError(true);
-          setFolderErrorMsg(errors.FOLDER);
+          setFolderErrorMsg(LanguageFunc("FOLDER", props.language));
         }
 
         break;
@@ -162,13 +164,17 @@ const KeyGenerationWizard: FC<Props> = (props): ReactElement => {
   const content = () => {
     switch(step) {
       case 0: return (
-        <SelectFolder setFolderPath={props.setFolderPath} folderPath={props.folderPath} setFolderError={setFolderError} folderError={folderError} setFolderErrorMsg={setFolderErrorMsg} folderErrorMsg={folderErrorMsg} modalDisplay={modalDisplay} setModalDisplay={setModalDisplay} />
+        <SelectFolder setFolderPath={props.setFolderPath} folderPath={props.folderPath}
+                      setFolderError={setFolderError} folderError={folderError} setFolderErrorMsg={setFolderErrorMsg}
+                      folderErrorMsg={folderErrorMsg} modalDisplay={modalDisplay} setModalDisplay={setModalDisplay}
+                      language={props.language}
+        />
       );
       case 1: return (
-        <CreatingKeys />
+        <CreatingKeys language={props.language}/>
       );
       case 2: return (
-        <KeysCreated folderPath={props.folderPath} network={props.network} />
+        <KeysCreated folderPath={props.folderPath} network={props.network} language={props.language}/>
       );
       default:
         return null;
@@ -179,7 +185,7 @@ const KeyGenerationWizard: FC<Props> = (props): ReactElement => {
     <Grid container direction="column" spacing={2}>
       <Grid item>
         <Typography variant="h1">
-          Create Keys
+          <Language language={props.language} id="Create_Keys"/>
         </Typography>
       </Grid>
       <ContentGrid item container>
@@ -187,8 +193,8 @@ const KeyGenerationWizard: FC<Props> = (props): ReactElement => {
           {content()}
         </Grid>
       </ContentGrid>
-      {props.children}
       <StepNavigation
+        children={props.children}
         onPrev={prevClicked}
         onNext={nextClicked}
         backLabel={prevLabel()}

@@ -3,7 +3,7 @@
  * This typescript file contains the Electron app which renders the React app.
  */
 
-import { BrowserWindow, app, globalShortcut, ipcMain, dialog, clipboard } from "electron";
+import { BrowserWindow, Menu, app, globalShortcut, ipcMain, dialog, clipboard } from "electron";
 import path from "path";
 
 import { accessSync, constants } from "fs";
@@ -25,9 +25,9 @@ const doesFileExist = (filename: string): boolean => {
 };
 
 app.on("ready", () => {
-  var iconPath = path.join("static", "icon.png");
-  const bundledIconPath = path.join(process.resourcesPath, "..", "static", "icon.png");
-  
+  var iconPath = path.join("static", "xhash.png");
+  const bundledIconPath = path.join(process.resourcesPath, "..", "static", "xhash.png");
+
   if (doesFileExist(bundledIconPath)) {
     iconPath = bundledIconPath;
   }

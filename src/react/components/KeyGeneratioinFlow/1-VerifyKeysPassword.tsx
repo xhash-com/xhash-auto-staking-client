@@ -2,6 +2,8 @@ import { Grid, TextField, Typography } from '@material-ui/core';
 import React, { FC, ReactElement, Dispatch, SetStateAction } from 'react';
 import styled from "styled-components";
 import { errors } from '../../constants';
+import {LanguageEnum} from "../../types";
+import {Language, LanguageFunc} from "../../language/Language";
 
 const Form = styled.form`
   display: flex;
@@ -17,11 +19,12 @@ const StyledTextField = styled(TextField)`
 type VerifyKeysPasswordProps = {
   setVerifyPassword: Dispatch<SetStateAction<string>>,
   passwordVerifyError: boolean,
-  onFinish: () => void
+  onFinish: () => void,
+  language: LanguageEnum,
 }
 
 /**
- * The page that prompts the user to reinput their keys password 
+ * The page that prompts the user to reinput their keys password
  * @param props self documenting parameters passed in
  * @returns react element to render
  */
@@ -41,20 +44,20 @@ const VerifyKeysPassword: FC<VerifyKeysPasswordProps> = (props): ReactElement =>
     <Grid container direction="column" spacing={3}>
       <Grid item xs={12}>
         <Typography>
-          Just to be sure...
+          <Language language={props.language} id="To_Be_Sure"/>
         </Typography>
       </Grid>
       <Grid item xs={12}>
         <Form onKeyDown={handleKeyDown}>
           <StyledTextField
             id="password"
-            label="Retype Password"
+            label={LanguageFunc("Retype_Password", props.language)}
             type="password"
             variant="outlined"
             autoFocus
             onChange={updateVerifyPassword}
             error={props.passwordVerifyError}
-            helperText={props.passwordVerifyError ? errors.PASSWORD_MATCH : ""}
+            helperText={props.passwordVerifyError ? LanguageFunc("PASSWORD_MATCH", props.language) : ""}
           />
         </Form>
       </Grid>

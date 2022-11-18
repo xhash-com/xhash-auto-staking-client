@@ -1,7 +1,8 @@
 import { Grid, TextField } from '@material-ui/core';
 import React, { FC, ReactElement, Dispatch, SetStateAction, useState } from 'react';
 import { errors } from '../../constants';
-import { Network } from '../../types';
+import {LanguageEnum, Network} from '../../types';
+import {Language, LanguageFunc} from "../../language/Language";
 
 type VerifyMnemonicProps = {
   mnemonicToVerify: string,
@@ -9,13 +10,14 @@ type VerifyMnemonicProps = {
   error: boolean,
   onVerifyMnemonic: () => void,
   network: Network,
-  mnemonic: string
+  mnemonic: string,
+  language: LanguageEnum,
 }
 
 /**
  * This page prompts the user to input the mnemonic and then checks it against what the actual mnemonic is
  * to make sure the user copied it down correctly.
- * 
+ *
  * @param props self documenting parameters passed in
  * @returns react element to render
  */
@@ -41,16 +43,16 @@ const VerifyMnemonic: FC<VerifyMnemonicProps> = (props): ReactElement => {
     setMnemonicToVerifyArray(currentMnemonicToVerifyArray);
     props.setMnemonicToVerify(currentMnemonicToVerifyArray.join(' '));
   }
-  
+
   const handleKeysForWord = (index: number) => (e: React.KeyboardEvent<HTMLInputElement>) => {
     // Navigate phrase confirmation with spacebar or arrowkeys
     let nextFocus = index;
     const currentTextFieldValue = mnemonicToVerifyArray[index];
-    
+
     if (e.key === ' ' && currentTextFieldValue.length >= 3 && index < 23) {
       nextFocus = index + 1;
     } else if (e.key === 'Backspace' && currentTextFieldValue.length == 0 && index >= 1) {
-      nextFocus = (index - 1) % 24; 
+      nextFocus = (index - 1) % 24;
     } else if (e.key === 'ArrowLeft') {
       nextFocus = (index - 1) % 24;
     } else if (e.key === 'ArrowUp') {
@@ -64,9 +66,9 @@ const VerifyMnemonic: FC<VerifyMnemonicProps> = (props): ReactElement => {
     if (nextFocus != index) {
       inputFields.at(nextFocus)?.current?.focus();
     }
-    
+
   }
-  
+
   const errorWithWordAtIndex = (index: number): boolean => {
     return props.error &&  props.mnemonic.split(' ')[index] != mnemonicToVerifyArray[index];
   }
@@ -79,7 +81,7 @@ const VerifyMnemonic: FC<VerifyMnemonicProps> = (props): ReactElement => {
 
   const createInputs = () => {
     let inputs = [];
- 
+
     for (let i = 0; i < 24; i++) {
       const inputRef = React.useRef<HTMLInputElement>();
 
@@ -88,13 +90,13 @@ const VerifyMnemonic: FC<VerifyMnemonicProps> = (props): ReactElement => {
           <TextField
             id={"verify-mnemonic-textfield-id-" + i}
             key={"verify-mnemonic-textfield-key-" + i}
-            label={"Word " + (i+1)}
+            label={LanguageFunc("Word", props.language) + (i+1)}
             variant="outlined"
             color="primary"
             error={errorWithWordAtIndex(i)}
             value={mnemonicToVerifyArray[i]}
             onChange={updateMnemonicToVerifyWord(i)}
-            onKeyDown={handleKeysForWord(i)} 
+            onKeyDown={handleKeysForWord(i)}
             inputRef={inputRef} />
         </Grid>
       );
@@ -112,7 +114,7 @@ const VerifyMnemonic: FC<VerifyMnemonicProps> = (props): ReactElement => {
   return (
     <Grid container direction="column" spacing={3}>
       <Grid item xs={12}>
-        Please retype your Secret Recovery Phrase here to make sure you have it saved correctly.
+        <Language language={props.language} id="Retype"/>
       </Grid>
       <Grid item container xs={12}>
         <Grid item xs={1} />
@@ -120,7 +122,7 @@ const VerifyMnemonic: FC<VerifyMnemonicProps> = (props): ReactElement => {
           <Grid item xs={10}>
             <TextField
               id="verify-mnemonic"
-              label="Confirm your Secret Recovery Phrase"
+              label={LanguageFunc("Confirm", props.language)}
               multiline
               fullWidth
               rows={4}
@@ -128,7 +130,7 @@ const VerifyMnemonic: FC<VerifyMnemonicProps> = (props): ReactElement => {
               variant="outlined"
               color="primary"
               error={props.error}
-              helperText={ props.error ? errors.MNEMONICS_DONT_MATCH : ""}
+              helperText={ props.error ? LanguageFunc("MNEMONICS_DONT_MATCH", props.language) : ""}
               value={props.mnemonicToVerify}
               onChange={updateMnemonicToVerify}
               onKeyDown={handleKeyDown} />

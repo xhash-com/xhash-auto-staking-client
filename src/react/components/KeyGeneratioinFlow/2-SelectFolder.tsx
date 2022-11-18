@@ -1,6 +1,8 @@
 import { Button, Grid, Typography } from '@material-ui/core';
 import { OpenDialogOptions, OpenDialogReturnValue } from 'electron';
 import React, { FC, ReactElement, Dispatch, SetStateAction } from 'react';
+import {LanguageEnum} from "../../types";
+import {Language} from "../../language/Language";
 
 type SelectFolderProps = {
   setFolderPath: Dispatch<SetStateAction<string>>,
@@ -11,11 +13,12 @@ type SelectFolderProps = {
   folderErrorMsg: string,
   setModalDisplay: Dispatch<SetStateAction<boolean>>,
   modalDisplay: boolean,
+  language: LanguageEnum,
 }
 
 /**
  * The page which prompts the user to choose a folder to save keys in
- * 
+ *
  * @param props self documenting parameters passed in
  * @returns react element to render
  */
@@ -45,18 +48,18 @@ const SelectFolder: FC<SelectFolderProps> = (props): ReactElement => {
     <Grid item container direction="column" spacing={3}>
       <Grid item xs={12}>
         <Typography variant="body1">
-          Choose a folder where we should save your keys.
+          <Language language={props.language} id="Choose_Folder"/>
         </Typography>
       </Grid>
       <Grid item xs={12}>
         <Button variant="contained" component="label" onClick={chooseFolder} tabIndex={1} disabled={props.modalDisplay}>
-          Browse
+          <Language language={props.language} id="Browse"/>
         </Button>
       </Grid>
       { props.folderPath != "" &&
         <Grid item xs={12}>
           <Typography >
-            You've selected: {props.folderPath}
+              <Language language={props.language} id="You_Selected"/> {props.folderPath}
           </Typography>
         </Grid>
       }

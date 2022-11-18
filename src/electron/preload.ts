@@ -18,6 +18,18 @@ import { createMnemonic, generateKeys, validateMnemonic } from './Eth2Deposit';
 
 import { doesDirectoryExist, isDirectoryWritable, findFirstFile } from './BashUtils';
 
+import { validateDepositKey, getExistingDepositsForPubkeys } from "./Deposit";
+
+import { doEncrypt } from "./Encrypt"
+
+import {
+  connect,
+  killSession,
+  getWalletStatus,
+  sendTransaction,
+  fetchTransactionStatus
+} from "./WalletApi";
+
 const ipcRendererSendClose = () => {
   ipcRenderer.send('close');
 };
@@ -30,8 +42,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   'shellOpenExternal': shell.openExternal,
   'shellShowItemInFolder': shell.showItemInFolder,
   'clipboardWriteText': clipboard.writeText,
+  'clipboardClear': clipboard.clear,
   'ipcRendererSendClose': ipcRendererSendClose,
-  'invokeShowOpenDialog': invokeShowOpenDialog
+  'invokeShowOpenDialog': invokeShowOpenDialog,
 });
 
 contextBridge.exposeInMainWorld('eth2Deposit', {
@@ -40,10 +53,27 @@ contextBridge.exposeInMainWorld('eth2Deposit', {
   'validateMnemonic': validateMnemonic
 });
 
+contextBridge.exposeInMainWorld('encrypt', {
+  'doEncrypt': doEncrypt,
+});
+
+contextBridge.exposeInMainWorld('deposit', {
+  "validateDepositKey": validateDepositKey,
+  "getExistingDepositsForPubkeys": getExistingDepositsForPubkeys
+});
+
 contextBridge.exposeInMainWorld('bashUtils', {
   'doesDirectoryExist': doesDirectoryExist,
   'isDirectoryWritable': isDirectoryWritable,
   'findFirstFile': findFirstFile
+});
+
+contextBridge.exposeInMainWorld('walletApi', {
+  'connect': connect,
+  'killSession': killSession,
+  'getWalletStatus': getWalletStatus,
+  "sendTransaction": sendTransaction,
+  "fetchTransactionStatus": fetchTransactionStatus,
 });
 
 contextBridge.exposeInMainWorld('web3Utils', {

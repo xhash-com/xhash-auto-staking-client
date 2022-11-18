@@ -4,6 +4,8 @@ import styled from 'styled-components';
 import KeyInputs from './KeyGeneratioinFlow/0-KeyInputs';
 import VerifyKeysPassword from './KeyGeneratioinFlow/1-VerifyKeysPassword';
 import StepNavigation from './StepNavigation';
+import {LanguageEnum} from "../types";
+import {Language} from "../language/Language";
 
 const ContentGrid = styled(Grid)`
   height: 320px;
@@ -24,13 +26,14 @@ type Props = {
   password: string,
   setPassword: Dispatch<SetStateAction<string>>,
   showAdvanced: boolean,
-  setShowAdvanced: Dispatch<SetStateAction<boolean>>
+  setShowAdvanced: Dispatch<SetStateAction<boolean>>,
+  language: LanguageEnum,
 }
 
 /**
  * This is the wizard the user will navigate to configure their keys.
  * It uses the notion of a 'step' to render specific pages within the flow.
- * 
+ *
  * @param props.onStepBack function to execute when stepping back
  * @param props.onStepForward function to execute when stepping forward
  * @param props.keyGenerationStartIndex the index at which to start generating keys for the user
@@ -58,9 +61,9 @@ const KeyConfigurationWizard: FC<Props> = (props): ReactElement => {
   const prevLabel = () => {
     switch (step) {
       case 0:
-        return "Back";
+        return <Language language={props.language} id="Back"/>;
       case 1:
-        return "Back";
+        return <Language language={props.language} id="Back"/>;
     }
   }
 
@@ -96,9 +99,9 @@ const KeyConfigurationWizard: FC<Props> = (props): ReactElement => {
   const nextLabel = () => {
     switch (step) {
       case 0:
-        return "Next";
+        return <Language language={props.language} id="Next"/>;
       case 1:
-        return "Next";
+        return <Language language={props.language} id="Next"/>;
     }
   }
 
@@ -133,14 +136,14 @@ const KeyConfigurationWizard: FC<Props> = (props): ReactElement => {
     } else {
       setNumberOfKeysError(false);
     }
-    
+
     if (props.password.length < 8) {
       setPasswordStrengthError(true);
       isError = true;
     } else {
       setPasswordStrengthError(false);
     }
-    
+
     if (props.keyGenerationStartIndex < 0) {
       setStartingIndexError(true);
       isError = true;
@@ -194,6 +197,7 @@ const KeyConfigurationWizard: FC<Props> = (props): ReactElement => {
           showAdvanced={props.showAdvanced}
           setShowAdvanced={props.setShowAdvanced}
           onFinish={validateInputs}
+          language={props.language}
         />
       );
       case 1: return (
@@ -201,6 +205,7 @@ const KeyConfigurationWizard: FC<Props> = (props): ReactElement => {
           setVerifyPassword={setVerifyPassword}
           passwordVerifyError={passwordVerifyError}
           onFinish={confirmPassword}
+          language={props.language}
         />
       );
       default:
@@ -212,7 +217,7 @@ const KeyConfigurationWizard: FC<Props> = (props): ReactElement => {
     <Grid container direction="column" spacing={2}>
       <Grid item>
         <Typography variant="h1">
-          Create Keys
+        <Language language={props.language} id="Create_Keys"/>
         </Typography>
       </Grid>
       <ContentGrid item container>

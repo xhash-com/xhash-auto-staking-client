@@ -6,8 +6,10 @@ import { Button } from '@material-ui/core';
 import { KeyIcon } from "../components/icons/KeyIcon";
 import { NetworkPicker } from "../components/NetworkPicker";
 import { tooltips } from "../constants";
-import { Network, StepSequenceKey } from '../types'
+import {LanguageEnum, Network, StepSequenceKey} from '../types'
 import VersionFooter from "../components/VersionFooter";
+import {LanguagePicker} from "../components/LanguagePicker";
+import {Language, LanguageFunc} from "../language/Language";
 
 const StyledMuiContainer = styled(Container)`
   display: flex;
@@ -19,6 +21,13 @@ const StyledMuiContainer = styled(Container)`
 const NetworkDiv = styled.div`
   margin-top: 35px;
   margin-right: 35px;
+  align-self: flex-end;
+  color: gray;
+`;
+
+const LanguageDiv = styled.div`
+  margin-top: 35px;
+  margin-left: 35px;
   align-self: flex-end;
   color: gray;
 `;
@@ -48,20 +57,24 @@ const OptionsGrid = styled(Grid)`
 
 type HomeProps = {
   network: Network,
-  setNetwork: Dispatch<SetStateAction<Network>>
+  setNetwork: Dispatch<SetStateAction<Network>>,
+  language: LanguageEnum,
+  setLanguage: Dispatch<SetStateAction<LanguageEnum>>
 }
 
 /**
  * Home page and entry point of the app.  This page displays general information
- * and options for a user to create a new secret recovery phrase or use an 
+ * and options for a user to create a new secret recovery phrase or use an
  * existing one.
- * 
+ *
  * @param props passed in data for the component to use
  * @returns the react element to render
  */
 const Home: FC<HomeProps> = (props): ReactElement => {
   const [showNetworkModal, setShowNetworkModal] = useState(false);
   const [networkModalWasOpened, setNetworkModalWasOpened] = useState(false);
+  const [showLanguageModal, setShowLanguageModal] = useState(false);
+  const [languageModalWasOpened, setLanguageModalWasOpened] = useState(false);
   const [createMnemonicSelected, setCreateMnemonicSelected] = useState(false);
   const [useExistingMnemonicSelected, setUseExistingMnemonicSelected] = useState(false);
 
@@ -72,9 +85,26 @@ const Home: FC<HomeProps> = (props): ReactElement => {
     setNetworkModalWasOpened(true);
   }
 
+  const handleOpenLanguageModal = () => {
+    setShowLanguageModal(true);
+    setLanguageModalWasOpened(true);
+  }
+
   const handleCloseNetworkModal = (event: object, reason: string) => {
     if (reason !== 'backdropClick') {
       setShowNetworkModal(false);
+
+      if (createMnemonicSelected) {
+        handleCreateNewMnemonic();
+      } else if (useExistingMnemonicSelected) {
+        handleUseExistingMnemonic();
+      }
+    }
+  }
+
+  const handleCloseLanguageModal = (event: object, reason: string) => {
+    if (reason !== 'backdropClick') {
+      setShowLanguageModal(false);
 
       if (createMnemonicSelected) {
         handleCreateNewMnemonic();
@@ -116,39 +146,53 @@ const Home: FC<HomeProps> = (props): ReactElement => {
 
   return (
     <StyledMuiContainer>
-      <NetworkDiv>
-        Select Network: <Button color="primary" onClick={handleOpenNetworkModal} tabIndex={tabIndex(1)}>{props.network}</Button>
-      </NetworkDiv>
+      <Grid container justifyContent="space-between">
+        <LanguageDiv>
+          <Language language={props.language} id="Select_Language"/><Button color="primary" onClick={handleOpenLanguageModal} tabIndex={tabIndex(1)}>{props.language}</Button>
+        </LanguageDiv>
+        <NetworkDiv>
+          <Language language={props.language} id="Select_Network"/><Button color="primary" onClick={handleOpenNetworkModal} tabIndex={tabIndex(1)}>{props.network}</Button>
+        </NetworkDiv>
+      </Grid>
+      <Modal
+          open={showLanguageModal}
+          onClose={handleCloseLanguageModal}
+      >
+        {/* Added <div> here per the following link to fix error https://stackoverflow.com/a/63521049/5949270 */}
+        <div>
+          <LanguagePicker handleCloseLanguageModal={handleCloseLanguageModal} setLanguage={props.setLanguage} language={props.language}></LanguagePicker>
+        </div>
+      </Modal>
       <Modal
         open={showNetworkModal}
         onClose={handleCloseNetworkModal}
       >
         {/* Added <div> here per the following link to fix error https://stackoverflow.com/a/63521049/5949270 */}
         <div>
-          <NetworkPicker handleCloseNetworkModal={handleCloseNetworkModal} setNetwork={props.setNetwork} network={props.network}></NetworkPicker>
+          <NetworkPicker handleCloseNetworkModal={handleCloseNetworkModal} setNetwork={props.setNetwork} network={props.network} language={props.language}></NetworkPicker>
         </div>
       </Modal>
 
-      <LandingHeader variant="h1">Welcome!</LandingHeader>
+      <LandingHeader variant="h1"><Language id={'Welcome'} language={props.language}/></LandingHeader>
       <KeyIcon />
-      <SubHeader>Your key generator for staking on Ethereum</SubHeader>
+      <SubHeader><Language language={props.language} id="SubHeader"/></SubHeader>
 
       <Links>
-        <InfoLabel>Github:</InfoLabel> https://github.com/stake-house/wagyu-key-gen
+        <InfoLabel>XHash</InfoLabel> https://www.xhash.com
         <br />
-        <InfoLabel>Support:</InfoLabel> https://discord.io/ethstaker
+        <InfoLabel>Github:</InfoLabel> https://github.com/xhash-com/xhash-auto-staking-client
       </Links>
 
       <OptionsGrid container spacing={2} direction="column">
         <Grid item>
           <Button variant="contained" color="primary" onClick={handleCreateNewMnemonic} tabIndex={tabIndex(1)}>
-            Create New Secret Recovery Phrase
+            <Language language={props.language} id="Create_New_Secret"/>
           </Button>
         </Grid>
         <Grid item>
-          <Tooltip title={tooltips.IMPORT_MNEMONIC}>
+          <Tooltip title={LanguageFunc("IMPORT_MNEMONIC", props.language)}>
             <Button style={{color: "gray"}} size="small" onClick={handleUseExistingMnemonic} tabIndex={tabIndex(1)}>
-              Use Existing Secret Recovery Phrase
+              <Language language={props.language} id="Use_Existing_Secret"/>
             </Button>
           </Tooltip>
         </Grid>

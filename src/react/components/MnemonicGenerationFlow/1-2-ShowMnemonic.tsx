@@ -3,7 +3,8 @@ import Alert from '@material-ui/lab/Alert';
 import { FileCopy } from '@material-ui/icons';
 import React, { FC, ReactElement, Fragment, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
-import { Network } from '../../types';
+import {LanguageEnum, Network} from '../../types';
+import {Language, LanguageFunc} from "../../language/Language";
 
 const spin = keyframes`
   0% { transform: rotate(0deg); }
@@ -37,19 +38,20 @@ const WhiteDisabledTextField = withStyles({
 type ShowMnemonicProps = {
   showCopyWarning: boolean,
   mnemonic: string,
-  network: Network
+  network: Network,
+  language: LanguageEnum,
 }
 
 /**
  * This page displays the mnemonic to the user and prompts them to write it down.
- * 
+ *
  * @param props the data passed in, self documenting
  * @returns the react element to render.
  */
 const ShowMnemonic: FC<ShowMnemonicProps> = (props): ReactElement => {
   const [copyTooltipOpen, setCopyTooltipOpen] = useState(false);
   const [copied, setCopied] = useState(false);
-  
+
   const handleCopyTooltipClose = () => {
     setCopyTooltipOpen(false);
     setTimeout(() => setCopied(false), 200);
@@ -75,7 +77,7 @@ const ShowMnemonic: FC<ShowMnemonicProps> = (props): ReactElement => {
                   disabled
                   id={"mnemonic-textfield-id-" + i}
                   key={"mnemonic-textfield-key-" + i}
-                  label={"Word " + (i+1)}
+                  label={ LanguageFunc("Word", props.language)+ (i+1)}
                   variant="outlined"
                   value={word} />
               </Grid>
@@ -86,14 +88,14 @@ const ShowMnemonic: FC<ShowMnemonicProps> = (props): ReactElement => {
     );
   }
 
-  const copyText = copied ? 'Copied' : 'Copy';
+  const copyText = <Language language={props.language} id={copied ? "Copied" : "Copy"}/>;
 
   return (
     <Grid container>
       { props.mnemonic == "" &&
         <Grid container spacing={5}>
           <Grid item xs={12}>
-            Generating your secret recovery phrase.  May take up to 30 seconds.
+              <Language language={props.language} id="Generating"/>
           </Grid>
           <Grid item container xs={12} justifyContent="center">
             <Loader />
@@ -105,10 +107,10 @@ const ShowMnemonic: FC<ShowMnemonicProps> = (props): ReactElement => {
 
           <Grid item xs={12}>
             { !props.showCopyWarning &&
-                <Typography>Below is your Secret Recovery Phrase.  Make sure you back it up - without it you will not be able to retrieve your funds.</Typography>
+                <Typography><Language language={props.language} id="Not_ShowCopyWarning"/></Typography>
             }
-            { props.showCopyWarning && 
-                <LoudText>Make sure you back it up - without it you will not be able to retrieve your funds.  You will be prompted for it next.</LoudText>
+            { props.showCopyWarning &&
+                <LoudText><Language language={props.language} id="ShowCopyWarning"/></LoudText>
             }
           </Grid>
           <Grid item container xs={12}>

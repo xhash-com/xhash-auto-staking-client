@@ -1,8 +1,11 @@
 import { Grid, Typography } from '@material-ui/core';
 import React, { FC, ReactElement } from 'react';
 import styled, { keyframes } from 'styled-components';
+import {Language} from "../../language/Language";
+import {LanguageEnum} from "../../types";
 
 type ValidatingMnemonicProps = {
+  language: LanguageEnum,
 }
 
 const spin = keyframes`
@@ -21,15 +24,15 @@ const Loader = styled.div`
 
 /**
  * This is the page that renders while we are validating the imported secret recovery phrase.
- * 
+ *
  * @returns the react element to render
  */
-const ValidatingMnemonic: FC<ValidatingMnemonicProps> = (): ReactElement => {
+const ValidatingMnemonic: FC<ValidatingMnemonicProps> = (props): ReactElement => {
   return (
     <Grid container spacing={3}>
       <Grid item xs={12}>
         <Typography variant="body1">
-          Validating secret recovery phrase...
+          <Language language={props.language} id="Validating_Secret_Recovery_Phrase"/>
         </Typography>
       </Grid>
       <Grid item container xs={12} justifyContent="center">

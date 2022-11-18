@@ -1,8 +1,11 @@
 import { Grid, Typography } from '@material-ui/core';
 import React, { FC, ReactElement } from 'react';
 import styled, { keyframes } from 'styled-components';
+import {LanguageEnum} from "../../types";
+import {Language} from "../../language/Language";
 
 type CreatingKeysProps = {
+  language: LanguageEnum,
 }
 
 const spin = keyframes`
@@ -21,17 +24,17 @@ const Loader = styled.div`
 
 /**
  * The waiting screen while keys are being created.
- * 
+ *
  * @returns react element to render
  */
-const CreatingKeys: FC<CreatingKeysProps> = (): ReactElement => {
+const CreatingKeys: FC<CreatingKeysProps> = (props): ReactElement => {
   return (
     <Grid container>
       <Grid item xs={1} />
       <Grid container item spacing={3} xs={10}>
         <Grid item container xs={12}>
           <Typography variant="body1" align="left">
-            The duration of this process depends on how many keys you are generating and the performance of your computer.  Generating one key takes about 30 seconds.  Generating 100 keys may take about 10 minutes.
+            <Language language={props.language} id="Wait_For_Create"/>
           </Typography>
         </Grid>
         <Grid item container xs={12} justifyContent="center">
