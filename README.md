@@ -53,6 +53,30 @@ yarn install
 yarn buildcliwin
 ```
 
+### Ubuntu 20.04 and later
+Execute all those commands in your terminal to setup your dev environment.
+
+```console
+sudo apt install -y curl
+curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+
+sudo apt install -y build-essential nodejs git python3-distutils python3-dev
+
+PATH="$HOME/.local/bin:$PATH"
+
+curl -sSL https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+python3 get-pip.py
+pip3 install pyinstaller
+
+sudo npm install -g yarn
+
+git clone https://github.com/stake-house/wagyu-key-gen
+cd wagyu-key-gen
+
+yarn install
+yarn buildcli
+```
+
 ## Start xhash-auto-staking-client
 Run the following commands in the repository directory:
 
