@@ -75,7 +75,8 @@
       "static/xhash.png"
     ],
     "mac": {
-      "category": "public.app-category.utilities"
+      "category": "public.app-category.utilities",
+      "icon": "static/xhash-512.png"
     },
     "linux": {
       "target": "AppImage",
