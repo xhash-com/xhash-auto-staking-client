@@ -65,6 +65,7 @@
   "build": {
     "appId": "com.xhash",
     "productName": "xhash-auto-staking-client",
+    "artifactName": "${productName}-${version}.${ext}",
     "files": [
       "build/**/*",
       "package.json"
