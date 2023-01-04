@@ -162,21 +162,21 @@ const Upload: FC<Props> = (props): ReactElement => {
 
       let encryptKeyPassword = window.encrypt.doEncrypt(uploadPublicKey, keyPassword) + '';
 
-      const promise = fileList.map(async file => {
+      for ( let file of fileList){
         try {
           const formData = new FormData();
           formData.append('password', encryptKeyPassword);
           formData.append('file', file.originFileObj!);
 
           const {data} = await axios.post(url + '/staking/upload',
-            formData,
-            {
-              headers: {
-                "Content-Type": "multipart/form-data",
-                "authorization": "Bearer " + token,
-                "from": "XHashStakingCli"
+              formData,
+              {
+                headers: {
+                  "Content-Type": "multipart/form-data",
+                  "authorization": "Bearer " + token,
+                  "from": "XHashStakingCli"
+                }
               }
-            }
           );
           console.log(data);
           if (data.code != '200') {
@@ -188,9 +188,8 @@ const Upload: FC<Props> = (props): ReactElement => {
           success = false;
           errorNotice(error + "");
         }
-      });
+      }
 
-      await Promise.all(promise);
       console.log(success);
       if (success) {
         errorNotice("Upload finished!");

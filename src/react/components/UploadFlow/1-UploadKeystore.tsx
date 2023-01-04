@@ -53,7 +53,6 @@ const UploadKeystore: FC<UploadKeystoreProps> = (props): ReactElement => {
             accept=".json"
             maxCount={100}
             multiple
-            iconRender={()=>{}}
           >
             <Button variant="contained" color="secondary" component="label" startIcon={<CloudUploadIcon />}>
               <Language language={props.language} id="Select"/>

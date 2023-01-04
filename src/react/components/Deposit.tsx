@@ -152,7 +152,7 @@ const Deposit: FC<Props> = (props): ReactElement => {
   const disableNext = () => {
     return !(((step === 0 && !modalDisplay)
         || (step === 1 && connected && !walletErrorMsg)
-        || (step === 2 && sendNum === finishedNum)));
+        || (step === 2)));
   }
 
   const disableBack = () => {
