@@ -74,7 +74,6 @@ const KeyConfigurationWizard: FC<Props> = (props): ReactElement => {
         setWithdrawalAddressFormatError(false);
         setPasswordStrengthError(false);
         setStartingIndexError(false);
-        props.setShowAdvanced(false);
         props.setPassword("");
         props.setKeyGenerationStartIndex(props.initialKeyGenerationStartIndex);
         props.setNumberOfKeys(1);
@@ -151,7 +150,7 @@ const KeyConfigurationWizard: FC<Props> = (props): ReactElement => {
       setStartingIndexError(false);
     }
 
-    if (props.withdrawalAddress != "" && props.showAdvanced) {
+    if (props.withdrawalAddress != "") {
       if (!window.web3Utils.isAddress(props.withdrawalAddress)) {
         setWithdrawalAddressFormatError(true);
         isError = true;
@@ -194,8 +193,6 @@ const KeyConfigurationWizard: FC<Props> = (props): ReactElement => {
           setWithdrawalAddressFormatError={setWithdrawalAddressFormatError}
           passwordStrengthError={passwordStrengthError}
           startingIndexError={startingIndexError}
-          showAdvanced={props.showAdvanced}
-          setShowAdvanced={props.setShowAdvanced}
           onFinish={validateInputs}
           language={props.language}
         />

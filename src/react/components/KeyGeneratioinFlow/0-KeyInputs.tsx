@@ -37,6 +37,10 @@ const AddressTextField = styled(TextField)`
   width: 440px;
 `
 
+const WithdrawalNotice = styled(Typography)`
+  margin: 0 60px;
+`
+
 /**
  * This page gathers data about the keys to generate for the user
  *

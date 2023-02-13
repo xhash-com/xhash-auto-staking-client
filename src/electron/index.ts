@@ -3,7 +3,7 @@
  * This typescript file contains the Electron app which renders the React app.
  */
 
-import { BrowserWindow, Menu, app, globalShortcut, ipcMain, dialog, clipboard } from "electron";
+import { BrowserWindow, app, globalShortcut, ipcMain, dialog, clipboard } from "electron";
 import path from "path";
 
 import { accessSync, constants } from "fs";
@@ -25,8 +25,8 @@ const doesFileExist = (filename: string): boolean => {
 };
 
 app.on("ready", () => {
-  var iconPath = path.join("static", "xhash.png");
-  const bundledIconPath = path.join(process.resourcesPath, "..", "static", "xhash.png");
+  var iconPath = path.join("static", "icon.png");
+  const bundledIconPath = path.join(process.resourcesPath, "..", "static", "icon.png");
 
   if (doesFileExist(bundledIconPath)) {
     iconPath = bundledIconPath;
@@ -61,15 +61,6 @@ app.on("ready", () => {
   window.webContents.session.setPermissionRequestHandler((webContents, permission, callback) => {
     return callback(false);
   });
-
-  /**
-   * Allow for refreshing of the React app within Electron without reopening.
-   * This feature is used for development and will be disabled before production deployment.
-   */
-	globalShortcut.register('CommandOrControl+R', function() {
-		console.log('CommandOrControl+R was pressed, refreshing the React app within Electron.')
-		window.reload()
-	})
 
   /**
    * This logic closes the application when the window is closed, explicitly.

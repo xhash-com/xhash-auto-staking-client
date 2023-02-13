@@ -62,8 +62,6 @@ export const NetworkPicker = (props: NetworkPickerProps) => {
     props.setNetwork(selected.target.value as Network);
   }
 
-  const goerliLabel = `${Network.GOERLI}/${Network.PRATER}`;
-
   return (
     <Container>
       <Header><Language id="Network" language={props.language}/></Header>
