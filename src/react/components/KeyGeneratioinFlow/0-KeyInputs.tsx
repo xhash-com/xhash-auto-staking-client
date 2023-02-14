@@ -20,8 +20,6 @@ type GenerateKeysProps = {
   numberOfKeysError: boolean,
   passwordStrengthError: boolean,
   startingIndexError: boolean,
-  showAdvanced: boolean,
-  setShowAdvanced: Dispatch<SetStateAction<boolean>>,
   onFinish: () => void,
   language: LanguageEnum,
 }
@@ -48,15 +46,6 @@ const WithdrawalNotice = styled(Typography)`
  * @returns
  */
 const KeyInputs = (props: GenerateKeysProps) => {
-
-  const handleToggleShowAdvanced = () => {
-    props.setShowAdvanced(!props.showAdvanced);
-    if (!props.showAdvanced) {
-      props.setWithdrawalAddress("");
-      props.setWithdrawalAddressFormatError(false);
-    }
-  }
-
   const updateNumberOfKeys = (e: React.ChangeEvent<HTMLInputElement>) => {
     const num = parseInt(e.target.value);
     props.setNumberOfKeys(num);
@@ -131,32 +120,26 @@ const KeyInputs = (props: GenerateKeysProps) => {
         </Grid>
       </Grid>
       <Grid item>
-        <FormControlLabel
-          control={<Switch checked={props.showAdvanced} onChange={handleToggleShowAdvanced} color="default" size="small" />}
-          label={LanguageFunc("Use_Advanced_Inputs", props.language)}
-        />
       </Grid>
       <Grid item>
-          <Fade in={props.showAdvanced} >
-            <Grid container item direction="row" justifyContent="center" alignItems="center" spacing={2} xs={12}>
-              <Grid item>
-                <Tooltip title={LanguageFunc("ETH1_WITHDRAW_ADDRESS", props.language)}>
-                  <AddressTextField
-                    id="eth1-withdraw-address"
-                    label={LanguageFunc("Ethereum_Withdrawal_Address", props.language)}
-                    variant="outlined"
-                    value={props.withdrawalAddress}
-                    onChange={updateEth1WithdrawAddress}
-                    error={props.withdrawalAddressFormatError}
-                    helperText={ props.withdrawalAddressFormatError ? LanguageFunc("ADDRESS_FORMAT_ERROR", props.language) : ""}
-                  />
-                </Tooltip>
-                <Typography variant="body1">
-                  <Language language={props.language} id="TIPS"/>
-                </Typography>
-              </Grid>
+          <Grid container item direction="row" justifyContent="center" alignItems="center" spacing={2} xs={12}>
+            <Grid item>
+              <Tooltip title={LanguageFunc("ETH1_WITHDRAW_ADDRESS", props.language)}>
+                <AddressTextField
+                  id="eth1-withdraw-address"
+                  label={LanguageFunc("Ethereum_Withdrawal_Address", props.language)}
+                  variant="outlined"
+                  value={props.withdrawalAddress}
+                  onChange={updateEth1WithdrawAddress}
+                  error={props.withdrawalAddressFormatError}
+                  helperText={ props.withdrawalAddressFormatError ? LanguageFunc("ADDRESS_FORMAT_ERROR", props.language) : ""}
+                />
+              </Tooltip>
+              <Typography variant="body1">
+                <Language language={props.language} id="TIPS"/>
+              </Typography>
             </Grid>
-          </Fade>
+          </Grid>
         </Grid>
     </Grid>
   );

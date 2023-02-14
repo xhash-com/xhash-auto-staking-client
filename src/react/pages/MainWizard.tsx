@@ -101,6 +101,19 @@ const Wizard: FC<WizardProps> = (props): ReactElement => {
     }
   }
 
+  const jumpToPage = (stepKey: StepKey) => {
+    switch (stepKey){
+      case StepKey.Deposit:
+        setActiveStepIndex(4)
+        break;
+      case StepKey.Upload:
+        setActiveStepIndex(5)
+        break;
+    }
+
+    return
+  }
+
   /**
    * This is the UI stepper component rendering where the user is in the process
    */
@@ -108,7 +121,7 @@ const Wizard: FC<WizardProps> = (props): ReactElement => {
     <Grid item>
       <StyledStepper activeStep={activeStepIndex} alternativeLabel>
         {stepSequence.map((stepKey: StepKey) => (
-          <Step key={stepKey}>
+          <Step key={stepKey} onClick={()=>jumpToPage(stepKey)}>
             <StepLabel><Language language={props.language} id={stepLabels[stepKey]}/></StepLabel>
           </Step>
         ))}

@@ -5,7 +5,7 @@ const KeyConfiguration = {
   "Password": "Password",
   "Use_Advanced_Inputs": "Use Advanced Inputs",
   "Ethereum_Withdrawal_Address": "Ethereum Withdrawal Address (Optional)",
-  "TIPS": "Please ensure that you have control over this address.",
+  "TIPS": "Please ensure that you have control over this address. If you do not add a withdrawal address now, you will be able to add one later with your 24 words secret recovery phrase.",
   "To_Be_Sure": "Just to be sure...",
   "Retype_Password":"Retype Password",
 

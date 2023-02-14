@@ -25,8 +25,6 @@ type Props = {
   setWithdrawalAddress: Dispatch<SetStateAction<string>>,
   password: string,
   setPassword: Dispatch<SetStateAction<string>>,
-  showAdvanced: boolean,
-  setShowAdvanced: Dispatch<SetStateAction<boolean>>,
   language: LanguageEnum,
 }
 
