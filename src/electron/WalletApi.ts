@@ -3,7 +3,6 @@ import WalletConnect from "@walletconnect/client";
 import QRCodeModal from "@walletconnect/qrcode-modal";
 import {IInternalEvent, IWalletConnectOptions} from "@walletconnect/types";
 import {Network} from "../react/types";
-import {forEach} from "lodash";
 
 const Goerli_URL = "https://goerli.etherscan.io/api?module=localchk&action=txexist&txhash="
 const MainNet_URL = "https://etherscan.io/api?module=localchk&action=txexist&txhash="
