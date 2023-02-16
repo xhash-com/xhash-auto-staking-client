@@ -298,19 +298,16 @@ const subscribeToEvents = () => {
     state.address = address,
     onSessionUpdate(accounts, chainId);
   }
-
-  // I don't understand
-  // this.setState({ connector });
 };
 
 export const killSession = async () => {
   const connector = state.connector;
   console.log(connector)
   if (connector) {
-    connector.killSession();
+    await connector.killSession();
   }
 
-  resetApp();
+  await resetApp();
 };
 
 const resetApp = async () => {
@@ -335,7 +332,7 @@ const onConnect = async (payload: IInternalEvent) => {
   state.accounts = accounts;
   state.address = address;
   state.wallet = state.connector?.peerMeta?.name
-  getAccountAssets();
+  await getAccountAssets();
 };
 
 export const getWalletStatus = () => {
@@ -351,7 +348,7 @@ export const getWalletStatus = () => {
 }
 
 const onDisconnect = async () => {
-  resetApp();
+  await resetApp();
 };
 
 const onSessionUpdate = async (accounts: string[], chainId: number) => {
@@ -359,7 +356,7 @@ const onSessionUpdate = async (accounts: string[], chainId: number) => {
   state.chainId = chainId;
   state.accounts = accounts;
   state.address = address;
-  getAccountAssets();
+  await getAccountAssets();
 };
 
 const getAccountAssets = async () => {
@@ -403,23 +400,23 @@ export async function apiGetAccountAssets(address: string, chainId: number): Pro
   return result;
 }
 
-export async function apiGetAccountTransactions(
-  address: string,
-  chainId: number,
-): Promise<IParsedTx[]> {
-  const response = await api.get(`/account-transactions?address=${address}&chainId=${chainId}`);
-  const { result } = response.data;
-  return result;
-}
-
-export const apiGetAccountNonce = async (address: string, chainId: number): Promise<string> => {
-  const response = await api.get(`/account-nonce?address=${address}&chainId=${chainId}`);
-  const { result } = response.data;
-  return result;
-};
-
-export const apiGetGasPrices = async (): Promise<IGasPrices> => {
-  const response = await api.get(`/gas-prices`);
-  const { result } = response.data;
-  return result;
-};
+// export async function apiGetAccountTransactions(
+//   address: string,
+//   chainId: number,
+// ): Promise<IParsedTx[]> {
+//   const response = await api.get(`/account-transactions?address=${address}&chainId=${chainId}`);
+//   const { result } = response.data;
+//   return result;
+// }
+//
+// export const apiGetAccountNonce = async (address: string, chainId: number): Promise<string> => {
+//   const response = await api.get(`/account-nonce?address=${address}&chainId=${chainId}`);
+//   const { result } = response.data;
+//   return result;
+// };
+//
+// export const apiGetGasPrices = async (): Promise<IGasPrices> => {
+//   const response = await api.get(`/gas-prices`);
+//   const { result } = response.data;
+//   return result;
+// };

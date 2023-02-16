@@ -8,30 +8,6 @@ import {
   OpenDialogReturnValue
 } from "electron";
 
-import {
-  FileOptions,
-  FileResult
-} from "tmp";
-
-import {
-  PathLike,
-  Stats,
-  Dirent
-} from "fs"
-
-import {
-  ChildProcess
-} from "child_process"
-import {
-  ALLState,
-  apiGetAccountAssets,
-  apiGetAccountNonce,
-  apiGetGasPrices,
-  connect, createSession,
-  IAssetData,
-  IGasPrices, KillSession, pollingTransactionStatus, sendTransaction
-} from "./WalletApi";
-import WalletConnect from "@walletconnect/client";
 import {Network} from "../react/types";
 
 export interface IElectronAPI {
