@@ -1,28 +1,22 @@
 import React, {Dispatch, FC, ReactElement, SetStateAction, useEffect, useState} from "react";
-import {
-  Button,
-  Card,
-  createStyles,
-  Grid,
-  makeStyles,
-  Theme,
-  withStyles
-} from "@material-ui/core";
+import {Button, Card, createStyles, Grid, makeStyles, Theme, withStyles} from "@material-ui/core";
 import QRCode from 'qrcode.react'
 import {LanguageEnum, Network} from "../../types";
 import SvgIcon from "@material-ui/core/SvgIcon";
 import {Language, LanguageFunc} from "../../language/Language";
+import {AddressStatus, ConnectStatus} from "../Deposit";
 
 type LoginWalletProps = {
-  walletNetwork: Network | null,
-  setWalletNetwork: Dispatch<SetStateAction<Network | null>>,
+  connectStatus: ConnectStatus,
+  connectStatusUpdater: Function,
+  addressStatus: AddressStatus,
+  addressStatusUpdater: Function,
   network: Network,
-  address: string,
-  setAddress: Dispatch<SetStateAction<string>>,
-  balance: number,
-  setBalance: Dispatch<SetStateAction<number>>,
-  connected: boolean,
-  setConnected: Dispatch<SetStateAction<boolean>>,
+  uri: string
+  toConnect: boolean,
+  setToConnect: Dispatch<SetStateAction<boolean>>,
+  getWalletMessage: Function,
+  polling: Function,
   walletErrorMsg: string,
   setWalletErrorMsg: Dispatch<SetStateAction<string>>,
   language: LanguageEnum,
@@ -82,66 +76,23 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const ConnectWallet: FC<LoginWalletProps> = (props): ReactElement => {
   const classes = useStyles();
-  const bull = <span className={classes.bullet}>•</span>;
-  const [ uri, setUri ] = useState("")
-
-  //默认未连接等待连接
-  let status = props.connected
-
-  useEffect(()=>{
-    if (status && !props.walletConnectTimer){
-      Polling()
-    }
-  })
-
-  const getWalletMessage = () => {
-    let netWork: Network | null = null
-    const wallet = window.walletApi.getWalletStatus()
-    if (wallet.connected && wallet.assets.length !== 0 && !status){
-      props.setConnected(wallet.connected)
-      props.setAddress(wallet.address)
-      netWork = wallet.chainId === 5 ? Network.GOERLI : wallet.chainId === 1 ? Network.MAINNET : null;
-      props.setWalletNetwork(netWork)
-      if (props.walletConnectTimer){
-        status = true
-      }
-      props.setBalance(wallet.balance/Math.pow(10,9))
-      if (props.network !== netWork){
-        props.setWalletErrorMsg(LanguageFunc("Wrong_Network", props.language) + props.network)
-      }else{
-        props.setWalletErrorMsg("")
-      }
-    }else if(!wallet.connected && status){
-      status = false
-      setUri("")
-      props.finishedPolling()
-      props.setWalletErrorMsg(LanguageFunc("Wallet_DisConnect", props.language));
-    }
-  }
-
-  const Polling = () => {
-    props.setWalletConnectTimer(setInterval(getWalletMessage, 750))
-  }
 
   const connect = async () => {
+    props.setToConnect(true)
     props.finishedPolling()
-    const connectUri = await window.walletApi.connect()
-    setUri(connectUri);
-
-    Polling()
+    await window.walletApi.connect()
+    await props.getWalletMessage()
+    props.polling()
   }
 
   const killSession = async () => {
     window.walletApi.killSession()
-    props.finishedPolling()
-    setUri("")
-    props.setConnected(false)
   }
 
   return (
    <Grid container spacing={3}>
      <Grid item xs={12}>
-       {props.connected ?
+       {props.connectStatus.connected ?
            <Button variant="contained" onClick={killSession}>
              <Language language={props.language} id="DisConnect"/>
            </Button> :
@@ -151,13 +102,13 @@ const ConnectWallet: FC<LoginWalletProps> = (props): ReactElement => {
                 <image width="25" height="25" xlinkHref={walletConnectIcon}/>
              </SvgIcon>
            }
-                        onClick={connect}>
+                        onClick={connect} disabled={props.toConnect}>
              {"WalletConnect"}
            </ColorButton>
        }
      </Grid>
      <Grid item xs={12}>
-         { props.connected ? props.walletErrorMsg ?
+         { props.toConnect && (props.connectStatus.connected ? props.walletErrorMsg ?
              (props.walletErrorMsg)
              :
            (<Grid
@@ -176,7 +127,7 @@ const ConnectWallet: FC<LoginWalletProps> = (props): ReactElement => {
                <Language language={props.language} id="Address"/>
              </Grid>
              <Grid item xs={8}>
-               {props.address}
+               {props.addressStatus.address}
              </Grid>
            </Grid>
            <Grid
@@ -202,21 +153,21 @@ const ConnectWallet: FC<LoginWalletProps> = (props): ReactElement => {
                <Language language={props.language} id="Balance"/>
              </Grid>
              <Grid item xs={8}>
-               {props.balance}
+               {props.addressStatus.balance}
              </Grid>
            </Grid>
-         </Grid>) : uri
+         </Grid>) : props.uri
              &&
              (
                  <Card className={classes.card}>
                      <QRCode className={classes.qrCode}
-                               value={uri} // 需要生成二维码图片的url地址
+                               value={props.uri} // 需要生成二维码图片的url地址
                                size={220} // 二维码图片大小
                                fgColor="#000000" // 二维码图片背景色
                                bgColor="#FFFFFF"
                                level="M"/>
                  </Card>
-             )
+             ))
          }
      </Grid>
    </Grid>

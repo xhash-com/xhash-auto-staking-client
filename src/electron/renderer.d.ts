@@ -36,11 +36,14 @@ export interface IEncryptAPI {
 }
 
 export interface IWalletAPI{
-  connect: () => Promise<string>,
+  connect: () => void,
   killSession : () => void,
   getWalletStatus: () => any,
   sendTransaction: (pubkey: string, withdrawal_credentials: string, signature: string, deposit_data_root: string, amount: number, network: Network) => any,
   testSendTransaction : () => any
+}
+
+export interface ITransactionAPI{
   fetchTransactionStatus: (txhash: string, network: Network) => Promise<any>;
 }
 
@@ -63,5 +66,6 @@ declare global {
     deposit: IDepositAPI,
     encrypt: IEncryptAPI,
     walletApi: IWalletAPI,
+    transactionApi: ITransactionAPI
   }
 }

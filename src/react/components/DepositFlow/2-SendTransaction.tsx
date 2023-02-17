@@ -1,4 +1,4 @@
-import React, {Dispatch, FC, ReactElement, SetStateAction, useState} from "react";
+import React, {Dispatch, FC, ReactElement, SetStateAction, useEffect, useState} from "react";
 import {
   Button,
   Grid,
@@ -37,7 +37,14 @@ type SendTransactionProps = {
 const SendTransaction: FC<SendTransactionProps> = (props): ReactElement => {
   const classes = useStyles();
   const [disable, setDisable] = useState(false);
+
   const newItems = props.depositKey
+
+  useEffect(()=>{
+    if(newItems !== null && newItems !== undefined){
+      props.setDepositKey(newItems)
+    }
+  }, newItems)
 
   async function confirmDeposit(row: DepositKeyInterface, index: number){
     setDisable(true)
@@ -70,7 +77,7 @@ const SendTransaction: FC<SendTransactionProps> = (props): ReactElement => {
   const Polling = async (index: number, hash: string) => {
     let timer: NodeJS.Timer;
     timer = setInterval(() => {
-      const result = window.walletApi.fetchTransactionStatus(hash, props.network);
+      const result = window.transactionApi.fetchTransactionStatus(hash, props.network);
       result.then(res=>{
         if (res.data.result==="True"){
           props.setFinishedNum(props.finishedNum + 1)

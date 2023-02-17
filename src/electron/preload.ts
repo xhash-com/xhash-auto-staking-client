@@ -27,8 +27,8 @@ import {
   killSession,
   getWalletStatus,
   sendTransaction,
-  fetchTransactionStatus
 } from "./WalletApi";
+import {fetchTransactionStatus} from "./TransactionApi";
 
 const ipcRendererSendClose = () => {
   ipcRenderer.send('close');
@@ -72,9 +72,12 @@ contextBridge.exposeInMainWorld('walletApi', {
   'connect': connect,
   'killSession': killSession,
   'getWalletStatus': getWalletStatus,
-  "sendTransaction": sendTransaction,
-  "fetchTransactionStatus": fetchTransactionStatus,
+  "sendTransaction": sendTransaction
 });
+
+contextBridge.exposeInMainWorld('transactionApi', {
+  "fetchTransactionStatus": fetchTransactionStatus
+})
 
 contextBridge.exposeInMainWorld('web3Utils', {
   'isAddress': Web3Utils.isAddress

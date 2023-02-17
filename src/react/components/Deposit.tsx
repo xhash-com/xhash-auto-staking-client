@@ -6,7 +6,7 @@ import StepNavigation from "./StepNavigation";
 import DepositeUpLoad from "./DepositFlow/0-DepositeUpLoad";
 import ConnectWallet from "./DepositFlow/1-ConnectWallet";
 import SendTransaction from "./DepositFlow/2-SendTransaction";
-import {Language} from "../language/Language";
+import {Language, LanguageFunc} from "../language/Language";
 
 const ContentGrid = styled(Grid)`
   height: 320px;
@@ -23,6 +23,18 @@ type Props = {
   onStepForward: () => void,
   network: Network,
   language: LanguageEnum,
+}
+
+export type ConnectStatus = {
+  connected: boolean,
+  fetching: boolean,
+  assets: boolean
+}
+
+export type AddressStatus = {
+  address: string,
+  balance: number,
+  netword: Network | null
 }
 
 /**
@@ -46,21 +58,47 @@ const Deposit: FC<Props> = (props): ReactElement => {
   const [modalDisplay, setModalDisplay] = useState(false);
   const [checkDepositKey, setCheckDepositKey] = useState(false);
   const [depositKey, setDepositKey] = useState<DepositKeyInterface[]>([]);
-  const [walletNetwork, setWalletNetwork] = useState<Network | null>(props.network)
-  const [address, setAddress] = useState("")
-  const [balance, setBalance] = useState(0)
-  const [connected, setConnected] = useState(false)
-  const [symbol,setSymbol] = useState("")
+  const [connectStatus, setConnectStatus] = useState<ConnectStatus>({connected: false, assets: false, fetching: false})
+  const [addressStatus, setAddressStatus] = useState<AddressStatus>({address: "", balance: 0, netword: null})
+  const [toConnect, setToConnect] = useState(false)
+  const [uri, setUri] = useState('')
   const [showCircular, setShowCircular] = useState(false)
   const [progress, setProgress] = useState(0)
   const [walletConnectTimer, setWalletConnectTimer] = useState<NodeJS.Timer | null>(null)
+  const [transactionTimer, setTransactionTimer] = useState<NodeJS.Timer | null>(null)
 
-  useEffect(()=>{
-    if(step != 1){
-      //clean timeer
-      finishedPolling()
+  const connectStatusUpdater = (connected: boolean, assets: boolean, fetching: boolean) => {
+    setConnectStatus({connected, assets, fetching})
+  }
+
+  const addressStatusUpdater = (address: string, balance: number, netword: Network | null) => {
+    setAddressStatus({address, balance, netword})
+  }
+
+  const getWalletMessage = () => {
+    const wallet = window.walletApi.getWalletStatus()
+
+    let network: Network | null = null
+    switch (wallet.chainId) {
+      case 5:
+        network = Network.GOERLI
+        break
+      case 1:
+        network = Network.MAINNET
+        break
     }
-  })
+
+    addressStatusUpdater(wallet.address, wallet.balance/Math.pow(10,9), network)
+    connectStatusUpdater(wallet.connected, wallet.assets, wallet.fetching)
+    setWalletErrorMsg(props.network !== network ? LanguageFunc("Wrong_Network", props.language) + props.network : '')
+    setUri(wallet.uri)
+  }
+
+  const polling = () => {
+    if(walletConnectTimer === null){
+      setWalletConnectTimer(setInterval(getWalletMessage, 1500))
+    }
+  }
 
   const finishedPolling = () => {
     if (walletConnectTimer){
@@ -68,14 +106,6 @@ const Deposit: FC<Props> = (props): ReactElement => {
       setWalletConnectTimer(null)
     }
   }
-
-  const resetWallet = () =>{
-    setWalletNetwork(props.network);
-    setBalance(0);
-    setAddress("");
-    setConnected(false);
-  }
-
   const prevClicked = () => {
     switch (step) {
       case 0: {
@@ -151,7 +181,7 @@ const Deposit: FC<Props> = (props): ReactElement => {
 
   const disableNext = () => {
     return !(((step === 0 && !modalDisplay)
-        || (step === 1 && connected && !walletErrorMsg)
+        || (step === 1 && toConnect && !walletErrorMsg)
         || (step === 2)));
   }
 
@@ -185,15 +215,16 @@ const Deposit: FC<Props> = (props): ReactElement => {
       case 1:
         return (
             <ConnectWallet
-                address={address}
-                connected={connected}
-                setConnected={setConnected}
-                setAddress={setAddress}
+                toConnect={toConnect}
+                setToConnect={setToConnect}
                 network={props.network}
-                balance={balance}
-                setBalance={setBalance}
-                walletNetwork={walletNetwork}
-                setWalletNetwork={setWalletNetwork}
+                connectStatus = {connectStatus}
+                connectStatusUpdater = {connectStatusUpdater}
+                uri={uri}
+                polling = {polling}
+                getWalletMessage={getWalletMessage}
+                addressStatus = {addressStatus}
+                addressStatusUpdater = {addressStatusUpdater}
                 walletErrorMsg={walletErrorMsg}
                 setWalletErrorMsg={setWalletErrorMsg}
                 language={props.language}
