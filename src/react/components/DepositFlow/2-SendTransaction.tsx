@@ -32,62 +32,65 @@ type SendTransactionProps = {
   finishedNum: number,
   setFinishedNum: Dispatch<SetStateAction<number>>,
   language: LanguageEnum,
+  transactionTimer: NodeJS.Timer | null,
+  setTransactionTimer: Dispatch<SetStateAction<NodeJS.Timer | null>>
 }
 
 const SendTransaction: FC<SendTransactionProps> = (props): ReactElement => {
   const classes = useStyles();
   const [disable, setDisable] = useState(false);
 
-  const newItems = props.depositKey
+  let newItems = props.depositKey
+  let finishedNum = props.finishedNum
 
   useEffect(()=>{
     if(newItems !== null && newItems !== undefined){
+      console.log("改变-----------")
       props.setDepositKey(newItems)
     }
-  }, newItems)
+  }, [newItems, props.sendNum, finishedNum])
 
   async function confirmDeposit(row: DepositKeyInterface, index: number){
     setDisable(true)
     setTimeout(()=>setDisable(false), 1000)
-    waitForSend(row, index)
+    newItems[index].transactionStatus = TransactionStatus.STARTED
     const result = await window.walletApi.sendTransaction(row.pubkey, row.withdrawal_credentials, row.signature, row.deposit_data_root, row.amount, props.network)
-    const newItem: DepositKeyInterface = Object.assign({}, row)
     if (result.result){
       props.setSendNum(props.sendNum + 1)
       newItems[index].transactionStatus = TransactionStatus.PENDING
       newItems[index].txHash = result.txHash
+      window.transactionApi.submitUndoneList(index, result.txHash, props.network)
+      await finishedTransactionStatus()
+      await Polling()
     }else{
       newItems[index].transactionStatus = TransactionStatus.REJECTED
       newItems[index].txHash = result.msg
     }
 
-    console.log(result)
-    props.setDepositKey([...newItems.slice(0, index), Object.assign({}, newItems[index]), ...newItems.slice(index+1)])
-    if (result.result){
-      Polling(index, result.txHash)
+    console.log('sendNUm', props.sendNum)
+  }
+
+  const Polling = async () => {
+    if (props.transactionTimer === null){
+      console.log(props.transactionTimer)
+      props.setTransactionTimer(setInterval(fetchTransactionStatus,1200))
     }
   }
 
-  const waitForSend = (row: DepositKeyInterface, index: number) => {
-    const newItem: DepositKeyInterface = Object.assign({}, row)
-    newItems[index].transactionStatus = TransactionStatus.STARTED
-    props.setDepositKey(newItems)
+  const fetchTransactionStatus = async () => {
+    const finished = window.transactionApi.getFinished()
+    if(finished != null){
+      newItems[finished.id].transactionStatus = TransactionStatus.SUCCEEDED
+      props.setFinishedNum(++finishedNum)
+      await finishedTransactionStatus()
+    }
   }
 
-  const Polling = async (index: number, hash: string) => {
-    let timer: NodeJS.Timer;
-    timer = setInterval(() => {
-      const result = window.transactionApi.fetchTransactionStatus(hash, props.network);
-      result.then(res=>{
-        if (res.data.result==="True"){
-          props.setFinishedNum(props.finishedNum + 1)
-          const newItem: DepositKeyInterface = Object.assign({}, props.depositKey[index])
-          newItems[index].transactionStatus = TransactionStatus.SUCCEEDED
-          props.setDepositKey(newItems)
-          clearInterval(timer)
-        }
-      })
-    }, 2000)
+  const finishedTransactionStatus = async () => {
+    if(finishedNum === props.sendNum && props.transactionTimer !== null){
+      clearInterval(props.transactionTimer)
+      props.setTransactionTimer(null)
+    }
   }
 
   return (

@@ -28,7 +28,8 @@ import {
   getWalletStatus,
   sendTransaction,
 } from "./WalletApi";
-import {fetchTransactionStatus} from "./TransactionApi";
+
+import {getFinished, submitUndoneList} from "./TransactionApi";
 
 const ipcRendererSendClose = () => {
   ipcRenderer.send('close');
@@ -76,7 +77,8 @@ contextBridge.exposeInMainWorld('walletApi', {
 });
 
 contextBridge.exposeInMainWorld('transactionApi', {
-  "fetchTransactionStatus": fetchTransactionStatus
+  "submitUndoneList": submitUndoneList,
+  "getFinished": getFinished
 })
 
 contextBridge.exposeInMainWorld('web3Utils', {

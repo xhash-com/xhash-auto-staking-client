@@ -23,7 +23,7 @@ const Deposit = {
   "REJECTED": "REJECTED",
   "Already_Deposited": "Already Deposited",
   "WAITING_FOR_SUCCESS": "WAITING FOR SUCCESS",
-  "SUCCESS": "WAITING FOR SUCCESS",
+  "SUCCESS": "SUCCESS",
   "Confirm_Deposit": "Confirm Deposit",
   "Retry": "Retry",
   "INSUFFICIENT_FUNDS": "INSUFFICIENT FUNDS",

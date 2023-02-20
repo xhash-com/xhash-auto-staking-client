@@ -44,7 +44,8 @@ export interface IWalletAPI{
 }
 
 export interface ITransactionAPI{
-  fetchTransactionStatus: (txhash: string, network: Network) => Promise<any>;
+  submitUndoneList: (id: number, txhash: string, network: Network) => void;
+  getFinished:() => any;
 }
 
 export interface IBashUtilsAPI {

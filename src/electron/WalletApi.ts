@@ -1,4 +1,3 @@
-import axios from "axios";
 import WalletConnect from "@walletconnect/client";
 import {IInternalEvent} from "@walletconnect/types";
 import {Network} from "../react/types";
@@ -28,7 +27,6 @@ export const sendTransaction = async (pubkey: string,
                                 deposit_data_root: string,
                                 amount: number,
                                 network: Network) : Promise<any> => {
-  amount = 0
   if (state.balance < amount){
     return {
       result: false,
@@ -38,8 +36,6 @@ export const sendTransaction = async (pubkey: string,
   }
 
   const tx = generateTx(state.address, pubkey, withdrawal_credentials, signature, deposit_data_root, amount, network);
-
-  console.log(tx)
 
   const returnResult = {
     result: false,
@@ -165,7 +161,6 @@ export const killSession = async () => {
   await resetApp();
 };
 
-//两部份   前端断开 和安卓断开    都应该清空数据  所以都要调用reset
 const resetApp = async () => {
   if(state.timer !== null){
     clearInterval(state.timer)
@@ -188,13 +183,13 @@ const onConnect = async (payload: IInternalEvent) => {
   state.chainId = chainId
   state.accounts = accounts
   state.address = address
+  getAccountAssets()
   if (state.timer === null){
     state.timer = setInterval(getAccountAssets, 3000)
   }
 };
 
 export const getWalletStatus = () => {
-  console.log(state)
   return {
     connected: state.connected,
     chainId: state.chainId,
@@ -215,6 +210,7 @@ const onSessionUpdate = async (accounts: string[], chainId: number) => {
   state.chainId = chainId
   state.accounts = accounts
   state.address = address
+  getAccountAssets()
   if (state.timer === null){
     state.timer = setInterval(getAccountAssets, 3000)
   }

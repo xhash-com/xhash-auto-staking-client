@@ -94,18 +94,19 @@ const Deposit: FC<Props> = (props): ReactElement => {
     setUri(wallet.uri)
   }
 
-  const polling = () => {
+  const pollingWalletConnect = () => {
     if(walletConnectTimer === null){
       setWalletConnectTimer(setInterval(getWalletMessage, 1500))
     }
   }
 
-  const finishedPolling = () => {
+  const finishedPollingWalletConnect = () => {
     if (walletConnectTimer){
       clearInterval(walletConnectTimer)
       setWalletConnectTimer(null)
     }
   }
+
   const prevClicked = () => {
     switch (step) {
       case 0: {
@@ -221,7 +222,7 @@ const Deposit: FC<Props> = (props): ReactElement => {
                 connectStatus = {connectStatus}
                 connectStatusUpdater = {connectStatusUpdater}
                 uri={uri}
-                polling = {polling}
+                pollingWalletConnect = {pollingWalletConnect}
                 getWalletMessage={getWalletMessage}
                 addressStatus = {addressStatus}
                 addressStatusUpdater = {addressStatusUpdater}
@@ -230,7 +231,7 @@ const Deposit: FC<Props> = (props): ReactElement => {
                 language={props.language}
                 walletConnectTimer={walletConnectTimer}
                 setWalletConnectTimer={setWalletConnectTimer}
-                finishedPolling={finishedPolling}
+                finishedPollingWalletConnect={finishedPollingWalletConnect}
             />
         );
       case 2:
@@ -238,6 +239,8 @@ const Deposit: FC<Props> = (props): ReactElement => {
             <SendTransaction
                 depositKey={depositKey}
                 setDepositKey={setDepositKey}
+                transactionTimer={transactionTimer}
+                setTransactionTimer={setTransactionTimer}
                 network={props.network}
                 sendNum={sendNum}
                 setSendNum={setSendNum}
