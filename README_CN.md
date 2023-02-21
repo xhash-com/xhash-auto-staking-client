@@ -23,6 +23,7 @@ xhash-auto-staking-client通過WalletConnect協議連接錢包，完成質押存
 | BitPay      |
 | MathWallet  |
 | Ellipal     |
+| Trust Wallet|
 
 ## 环境配置和依赖项
 在運行xhash-auto- stake -client之前，需要安裝一些依賴項。

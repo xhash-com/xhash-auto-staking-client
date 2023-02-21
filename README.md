@@ -24,6 +24,7 @@ xhash-auto-staking-client support the wallet which support WalletConnect.Here's 
 | BitPay      |
 | MathWallet  |
 | Ellipal     |
+| Trust Wallet|
 
 ## Environment Configuration & Dependencies
 Prior to running xhash-auto-staking-client a few dependencies need to be installed.
