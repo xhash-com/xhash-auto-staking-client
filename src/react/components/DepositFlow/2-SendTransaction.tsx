@@ -1,6 +1,6 @@
 import React, {Dispatch, FC, ReactElement, SetStateAction, useEffect, useState} from "react";
 import {
-  Button,
+  Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,
   Grid,
   makeStyles,
   Paper,
@@ -40,6 +40,11 @@ const SendTransaction: FC<SendTransactionProps> = (props): ReactElement => {
   const classes = useStyles();
   const [disable, setDisable] = useState(false);
 
+  const [open, setOpen] = React.useState(true);
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   let newItems = props.depositKey
   let finishedNum = props.finishedNum
 
@@ -52,7 +57,6 @@ const SendTransaction: FC<SendTransactionProps> = (props): ReactElement => {
 
   async function confirmDeposit(row: DepositKeyInterface, index: number){
     setDisable(true)
-    setTimeout(()=>setDisable(false), 1000)
     newItems[index].transactionStatus = TransactionStatus.STARTED
     const result = await window.walletApi.sendTransaction(row.pubkey, row.withdrawal_credentials, row.signature, row.deposit_data_root, row.amount, props.network)
     if (result.result){
@@ -67,7 +71,8 @@ const SendTransaction: FC<SendTransactionProps> = (props): ReactElement => {
       newItems[index].txHash = result.msg
     }
 
-    console.log('sendNUm', props.sendNum)
+    setDisable(false)
+    console.log('sendnum', props.sendNum)
   }
 
   const Polling = async () => {
@@ -95,6 +100,28 @@ const SendTransaction: FC<SendTransactionProps> = (props): ReactElement => {
 
   return (
    <Grid container spacing={0}>
+     <Grid>
+       <Dialog
+           open={open}
+           onClose={handleClose}
+           aria-labelledby="alert-dialog-title"
+           aria-describedby="alert-dialog-description"
+       >
+         <DialogTitle id="alert-dialog-title">
+           <Language language={props.language} id="Wallet_Notice_Title"/>
+         </DialogTitle>
+         <DialogContent>
+           <DialogContentText id="alert-dialog-description">
+             <Language language={props.language} id="Wallet_Running_Notice"/>
+           </DialogContentText>
+         </DialogContent>
+         <DialogActions>
+           <Button onClick={handleClose} autoFocus>
+             <Language language={props.language} id="Sure"/>
+           </Button>
+         </DialogActions>
+       </Dialog>
+     </Grid>
      <Grid item xs={12}>
        <TableContainer component={Paper} className={classes.tableBody}>
          <Table className={classes.table} stickyHeader aria-label="sticky table">

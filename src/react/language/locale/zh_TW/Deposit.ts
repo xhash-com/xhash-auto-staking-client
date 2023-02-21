@@ -32,6 +32,8 @@ const Deposit = {
   "ALREADY_DEPOSITED": "已經存款",
   "READY_FOR_DEPOSIT": "準備存款",
   "Wallet_DisConnect": "錢包已斷開連接，請重新連接",
+  "Wallet_Notice_Title": "請確保錢包應用程序已打開",
+  "Wallet_Running_Notice":"發送交易過程中請確保您的錢包APP在前台運行，否則可能會導致交易發送失敗"
 }
 
 export default Deposit

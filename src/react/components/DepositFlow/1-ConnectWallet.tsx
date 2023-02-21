@@ -156,6 +156,8 @@ const ConnectWallet: FC<LoginWalletProps> = (props): ReactElement => {
                {props.addressStatus.balance}
              </Grid>
            </Grid>
+           <Grid>
+           </Grid>
          </Grid>) : props.uri
              &&
              (

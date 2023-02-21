@@ -32,6 +32,8 @@ const Deposit = {
   "ALREADY_DEPOSITED": "ALREADY_DEPOSITED",
   "READY_FOR_DEPOSIT": "READY_FOR_DEPOSIT",
   "Wallet_DisConnect": "The wallet is disconnected, please reconnect",
+  "Wallet_Notice_Title": "Please ensure wallet app is open",
+  "Wallet_Running_Notice":"Please ensure that your wallet app is running in the foreground during the process of sending the transaction, otherwise the transaction may fail to be sent"
 }
 
 export default Deposit
