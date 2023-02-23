@@ -59,7 +59,7 @@ export interface IGasPrices {
 }
 
 export interface IAppState {
-  connector: WalletConnect;
+  connector: WalletConnect | null;
   fetching: boolean;
   connected: boolean;
   chainId: number;
@@ -68,7 +68,7 @@ export interface IAppState {
   address: string;
   assets: boolean;
   balance: number;
-  timer: NodeJS.Timer|null;
+  timer: NodeJS.Timer | null;
 }
 
 export interface Tx {

@@ -1,7 +1,7 @@
 {
   "name": "xhash-auto-staking-client",
   "productName": "xhash-auto-staking-client",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "GUI application for eth2.0 staking on XHash",
   "main": "./build/electron/index.js",
   "author": "XHash",

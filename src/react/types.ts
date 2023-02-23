@@ -52,3 +52,22 @@ export enum TransactionStatus {
   'FAILED',
   'REJECTED',
 }
+
+export enum FileUploadStatus {
+  'READY',
+  'LOADING',
+  'SUCCESS',
+  'FAILURE'
+}
+
+export interface UploadFile {
+  file: File,
+  status: FileUploadStatus,
+  text: string
+}
+
+export interface twoFA {
+  token: string,
+  twoFactor: boolean,
+  twoFactorToken: string
+}

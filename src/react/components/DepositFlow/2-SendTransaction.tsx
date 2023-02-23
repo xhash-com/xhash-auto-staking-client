@@ -1,6 +1,11 @@
 import React, {Dispatch, FC, ReactElement, SetStateAction, useEffect, useState} from "react";
 import {
-  Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   Grid,
   makeStyles,
   Paper,
@@ -19,7 +24,7 @@ const useStyles = makeStyles({
     minWidth: 600,
   },
   tableBody: {
-    maxHeight: 325,
+    maxHeight: 'calc(100vh - 375px)',
   },
 });
 

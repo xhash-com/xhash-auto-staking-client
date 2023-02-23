@@ -5,9 +5,7 @@ import {IAppState} from "./common/type";
 import {apiGetAccountAssets, generateTx, getErrorMsg, getETHBalanceGWei} from "./common/method";
 
 const INITIAL_STATE: IAppState = {
-  connector: new WalletConnect({
-    bridge: "https://bridge.walletconnect.org"
-  }),
+  connector: null,
   fetching: false,
   connected: false,
   chainId: 1,
@@ -66,6 +64,12 @@ export const sendTransaction = async (pubkey: string,
 }
 
 export const connect = async () => {
+  if (state.connector === null) {
+    state.connector = new WalletConnect({
+      bridge: "https://bridge.walletconnect.org"
+    })
+  }
+
   const connector = state.connector
   // check if already connected
   if (!connector.connected) {

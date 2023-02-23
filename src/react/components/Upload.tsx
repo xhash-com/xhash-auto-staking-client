@@ -7,9 +7,8 @@ import styled from 'styled-components';
 import LoginXHash from "./UploadFlow/0-LoginXHash";
 import UploadKeystore from "./UploadFlow/1-UploadKeystore";
 import Success from "./UploadFlow/2-Success";
-import {LanguageEnum, Network} from '../types';
+import {FileUploadStatus, LanguageEnum, Network, twoFA, UploadFile} from '../types';
 import StepNavigation from "./StepNavigation";
-import {UploadFile} from "antd";
 import {Language} from "../language/Language";
 
 const ContentGrid = styled(Grid)`
@@ -33,6 +32,7 @@ type Props = {
  * @param props.network the network the app is running for
  * @returns the react element to render
  */
+
 const Upload: FC<Props> = (props): ReactElement => {
 
   const [step, setStep] = useState(0);
@@ -42,6 +42,9 @@ const Upload: FC<Props> = (props): ReactElement => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [token, setToken] = useState("");
+  const [twoFA, set2FA] = useState("");
+  const [open2FA, setOpen2FA] = useState(false);
+  const [twoFACode, set2FACode] = useState("");
   const [emailError, setEmailError] = useState(false);
   const [passwordStrengthError, setPasswordStrengthError] = useState(false);
   const [loginProgress, setLoginProgress] = useState(false);
@@ -162,11 +165,21 @@ const Upload: FC<Props> = (props): ReactElement => {
 
       let encryptKeyPassword = window.encrypt.doEncrypt(uploadPublicKey, keyPassword) + '';
 
-      for ( let file of fileList){
+      const fileObjListDate = fileList.filter(item => item.status !== FileUploadStatus.SUCCESS).map(item => {
+        return {
+          ...item,
+          status: FileUploadStatus.LOADING
+        }
+      })
+
+      setFileList(fileObjListDate)
+
+      for (let key = 0; key < fileObjListDate.length; key++) {
+        const file = fileObjListDate[key].file
         try {
           const formData = new FormData();
           formData.append('password', encryptKeyPassword);
-          formData.append('file', file.originFileObj!);
+          formData.append('file', file);
 
           const {data} = await axios.post(url + '/staking/upload',
               formData,
@@ -179,11 +192,39 @@ const Upload: FC<Props> = (props): ReactElement => {
               }
           );
           console.log(data);
-          if (data.code != '200') {
+          if (data.code === '200') {
+            setFileList((old) => {
+              return old.map((item, index) => {
+                return index === key ? {
+                  ...item,
+                  status: FileUploadStatus.SUCCESS,
+                  text: ''
+                } : item
+              })
+            })
+          } else {
+            setFileList((old) => {
+              return old.map((item, index) => {
+                return index === key ? {
+                  ...item,
+                  status: FileUploadStatus.FAILURE,
+                  text: data.msg
+                } : item
+              })
+            })
             success = false;
             errorNotice(data.msg);
           }
         } catch (error) {
+          setFileList((old) => {
+            return old.map((item, index) => {
+              return index === key ? {
+                ...item,
+                status: FileUploadStatus.FAILURE,
+                text: error + ""
+              } : item
+            })
+          })
           console.log(error);
           success = false;
           errorNotice(error + "");
@@ -281,22 +322,23 @@ const Upload: FC<Props> = (props): ReactElement => {
 
   const loginByEmail = async (encryptPassword: any) => {
     try {
-      const { data } = await axios.post(url + "/user/login",
-        {
-          email: email,
-          password: encryptPassword
-        },{
-          headers: {
-            "from": "XHashStakingCli"
-          },
-        }
+      const {data} = await axios.post(url + "/user/login",
+          {
+            email: email,
+            password: encryptPassword
+          }, {
+            headers: {
+              "from": "XHashStakingCli"
+            },
+          }
       );
       if (data.code != '200') {
         errorNotice(data.msg);
         return false;
       }
+      //加二次验证的逻辑
       setToken(data.data.token);
-      return true;
+      return twoFactorAuthentication(data.data);
     } catch (error) {
       console.log(error);
       errorNotice(error + "");
@@ -304,28 +346,76 @@ const Upload: FC<Props> = (props): ReactElement => {
     }
   }
 
+  const twoFactorAuthentication = (data: twoFA) => {
+    if (!data.twoFactor) {
+      return true
+    }
+
+    setOpen2FA(data.twoFactor)
+    set2FA(data.twoFactorToken)
+    return false
+  }
+
+  const verify2FA = async () => {
+    try {
+      const {data} = await axios.post(url + "/user/twoFactor/verify",
+          {
+            googleCode: twoFACode,
+            twoFactorToken: twoFA
+          }, {
+            headers: {
+              "from": "XHashStakingCli"
+            },
+          }
+      );
+      if (data.code != '200') {
+        errorNotice(data.msg);
+        return false;
+      }
+      setToken(data.data.token);
+      setOpen2FA(false)
+      set2FA("")
+      setStep(step + 1);
+    } catch (error) {
+      console.log(error);
+      errorNotice(error + "");
+      return false;
+    }
+  }
+
+  const deleteFile = (index: number) => {
+    setFileList([...fileList.slice(0, index), ...fileList.slice(index + 1)])
+  }
+
   const content = () => {
     switch (step) {
-      case 0: return (
-        <LoginXHash
-          email={email}
-          setEmail={setEmail}
-          password={password}
-          setPassword={setPassword}
-          emailError={emailError}
-          passwordStrengthError={passwordStrengthError}
-          language={props.language}
-        />
-      );
-      case 1: return (
-        <UploadKeystore
-          fileList={fileList}
-          setFileList={setFileList}
-          keyPassword={keyPassword}
-          setKeyPassword={setKeyPassword}
-          keyPasswordStrengthError={keyPasswordStrengthError}
-          language={props.language}
-        />
+      case 0:
+        return (
+            <LoginXHash
+                email={email}
+                setEmail={setEmail}
+                password={password}
+                setPassword={setPassword}
+                emailError={emailError}
+                twoFactorToken={twoFA}
+                set2FACode={set2FACode}
+                open2FA={open2FA}
+                verify2FA={verify2FA}
+                passwordStrengthError={passwordStrengthError}
+                language={props.language}
+            />
+        );
+      case 1:
+        return (
+            <UploadKeystore
+                fileList={fileList}
+                setFileList={setFileList}
+                keyPassword={keyPassword}
+                setKeyPassword={setKeyPassword}
+                deleteFile={deleteFile}
+                keyPasswordStrengthError={keyPasswordStrengthError}
+                language={props.language}
+            />
       );
       case 2: return (
         <Success

@@ -1,4 +1,15 @@
-import {Button, Grid, TextField, Tooltip, Typography} from '@material-ui/core';
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Grid,
+  TextField,
+  Tooltip,
+  Typography
+} from '@material-ui/core';
 import React, {Dispatch, FC, ReactElement, SetStateAction} from 'react';
 import styled from 'styled-components';
 import {LanguageEnum} from "../../types";
@@ -12,6 +23,10 @@ type LoginXHashProps = {
   emailError: boolean,
   passwordStrengthError: boolean,
   language: LanguageEnum,
+  twoFactorToken: string,
+  open2FA: boolean,
+  set2FACode: Dispatch<SetStateAction<string>>,
+  verify2FA: Function
 }
 
 const StyledTextField = styled(TextField)`
@@ -43,17 +58,37 @@ const LoginXHash: FC<LoginXHashProps> = (props): ReactElement => {
         </Typography>
       </Grid>
       <Grid container item direction="column" justifyContent="center" alignItems="center" spacing={2} xs={12}>
+        <Dialog open={props.open2FA}>
+          <DialogTitle>Two Factor Authentication</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Enter your 2FA code
+            </DialogContentText>
+            <TextField
+                autoFocus
+                margin="dense"
+                id="2FA"
+                type="text"
+                onChange={event => props.set2FACode(event.target.value)}
+                fullWidth
+                variant="standard"
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => props.verify2FA()}>Submit</Button>
+          </DialogActions>
+        </Dialog>
         <Grid item>
           <Tooltip title={LanguageFunc("EMAIL", props.language)}>
             <StyledTextField
-              id="email"
-              label={LanguageFunc("Email", props.language)}
-              variant="outlined"
-              type="string"
-              value={props.email}
-              onChange={updateEmail}
-              error={props.emailError}
-              helperText={ props.emailError ? LanguageFunc("EMAIL_ERROR", props.language) : ""}
+                id="email"
+                label={LanguageFunc("Email", props.language)}
+                variant="outlined"
+                type="string"
+                value={props.email}
+                onChange={updateEmail}
+                error={props.emailError}
+                helperText={props.emailError ? LanguageFunc("EMAIL_ERROR", props.language) : ""}
             />
           </Tooltip>
         </Grid>

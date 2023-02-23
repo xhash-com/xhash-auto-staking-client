@@ -1011,13 +1011,13 @@ __metadata:
   linkType: hard
 
 "@walletconnect/jsonrpc-utils@npm:^1.0.3":
-  version: 1.0.4
-  resolution: "@walletconnect/jsonrpc-utils@npm:1.0.4"
+  version: 1.0.5
+  resolution: "@walletconnect/jsonrpc-utils@npm:1.0.5"
   dependencies:
     "@walletconnect/environment": ^1.0.1
     "@walletconnect/jsonrpc-types": ^1.0.2
     tslib: 1.14.1
-  checksum: 33c0897bc4492bb8bf91935e3699e9bb3a644caa6b54561c4849f3828ba7e604339fe1bd89116ed685e57746d5a445242342b8cfe8879d77bd63bbf4924786f8
+  checksum: 8a9b55ee289bb1ac062dfae5cfa855fba19e014db120301625ef071f578b536b73a648bab9ac7dfaac31e90b921a5c6f099b062a2e9ff25822a83356bd602b28
   languageName: node
   linkType: hard
 
