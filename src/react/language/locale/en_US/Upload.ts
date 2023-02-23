@@ -7,6 +7,16 @@ const Upload = {
   "Email": "Email",
   "Select_Keystore_Files": "Select the keystore file you just generated. The [json] is located in your [validatorKeys] directory.",
   "Keystore_Password": "keystore password",
+  "Two_Factor_Authentication": "Two Factor Authentication",
+  "Enter_your_2FA_code": "Enter your 2FA code",
+  "Submit": "Submit",
+  'upload_3002': 'Duplicated',
+  'upload_3003': 'KeyStore error',
+  'upload_3004': 'Password error',
+  'upload_3005': 'Validator Status No Allow',
+  'upload_3006': 'Xhash Staking Server Stop',
+  'upload_3007': 'File Too Large',
+  'upload_3008': 'Validator reached the limit'
 }
 
 export default Upload

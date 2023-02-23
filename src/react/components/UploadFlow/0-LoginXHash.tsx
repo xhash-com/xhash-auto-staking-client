@@ -59,10 +59,10 @@ const LoginXHash: FC<LoginXHashProps> = (props): ReactElement => {
       </Grid>
       <Grid container item direction="column" justifyContent="center" alignItems="center" spacing={2} xs={12}>
         <Dialog open={props.open2FA}>
-          <DialogTitle>Two Factor Authentication</DialogTitle>
+          <DialogTitle><Language language={props.language} id="Two_Factor_Authentication"/></DialogTitle>
           <DialogContent>
             <DialogContentText>
-              Enter your 2FA code
+              <Language language={props.language} id="Enter_your_2FA_code"/>
             </DialogContentText>
             <TextField
                 autoFocus
@@ -75,7 +75,7 @@ const LoginXHash: FC<LoginXHashProps> = (props): ReactElement => {
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => props.verify2FA()}>Submit</Button>
+            <Button onClick={() => props.verify2FA()}><Language language={props.language} id="Submit"/></Button>
           </DialogActions>
         </Dialog>
         <Grid item>

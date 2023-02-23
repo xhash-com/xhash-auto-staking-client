@@ -208,7 +208,7 @@ const Upload: FC<Props> = (props): ReactElement => {
                 return index === key ? {
                   ...item,
                   status: FileUploadStatus.FAILURE,
-                  text: data.msg
+                  text: 'upload_' + data.code
                 } : item
               })
             })

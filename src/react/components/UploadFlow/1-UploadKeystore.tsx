@@ -80,7 +80,13 @@ const UploadKeystore: FC<UploadKeystoreProps> = (props): ReactElement => {
     })
 
     props.setFileList([...props.fileList, ...fileList])
+
+    resetInputButton(even)
   };
+
+  const resetInputButton = (even: { target: any; }) => {
+    even.target.value = "";
+  }
 
   const updateKeyPassword = (e: React.ChangeEvent<HTMLInputElement>) => {
     props.setKeyPassword(e.target.value);
@@ -107,7 +113,7 @@ const UploadKeystore: FC<UploadKeystoreProps> = (props): ReactElement => {
               <TableBody>
                 {props.fileList.map((row, index) => (
                     <TableRow key={row.file.name}>
-                      <TableCell style={{width: '70vw'}}>
+                      <TableCell style={{width: '65vw'}}>
                         {row.file.name}
                       </TableCell>
                       <TableCell style={{width: '5vw'}}>
@@ -115,9 +121,9 @@ const UploadKeystore: FC<UploadKeystoreProps> = (props): ReactElement => {
                           <DeleteRounded/>
                         </StyleIconButton>
                       </TableCell>
-                      <TableCell>
+                      <TableCell style={{width: '30vw'}}>
                         {row.status === FileUploadStatus.LOADING && (
-                            <Grid style={{width: '1.5rem', height: '1.5rem'}}>
+                            <Grid>
                               <CircularProgress color='primary'
                                                 style={{width: '1.5rem', height: '1.5rem'}}
                               />
@@ -134,7 +140,7 @@ const UploadKeystore: FC<UploadKeystoreProps> = (props): ReactElement => {
                             <Box display="flex" alignItems="center">
                               <ErrorOutlineIcon className={classes.warning_icons}
                                                 style={{width: '1.5rem', height: '1.5rem'}}/>
-                              <Typography>{row.text}</Typography>
+                              <Typography><Language language={props.language} id={row.text}/></Typography>
                             </Box>
                         )}
                       </TableCell>
