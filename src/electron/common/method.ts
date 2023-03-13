@@ -3,6 +3,10 @@ import axios, {AxiosInstance} from "axios";
 import {Network} from "../../react/types";
 
 const timers: NodeJS.Timer[] = []
+const apiKeyToken = 'A6139HD6GFIYGTH5HXD468K6AWCW96W6RU'
+const chain = {
+  "Mainet": ""
+}
 
 export const sleep = (duration: number) => {
   return new Promise((resolve) => {
@@ -115,12 +119,29 @@ export async function apiGetAccountTransactions(
 
 export const apiGetAccountNonce = async (address: string, chainId: number): Promise<string> => {
   const response = await api.get(`/account-nonce?address=${address}&chainId=${chainId}`);
-  const { result } = response.data;
+  const {result} = response.data;
   return result;
 };
 
 export const apiGetGasPrices = async (): Promise<IGasPrices> => {
   const response = await api.get(`/gas-prices`);
-  const { result } = response.data;
+  const {result} = response.data;
   return result;
 };
+
+const etherscan = (network: Network): AxiosInstance => {
+  return axios.create({
+    baseURL: `https://${Network.MAINNET === network ? 'api' : 'api-goerli'}.etherscan.io`,
+    timeout: 3000, // 5 secs
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+  })
+};
+
+export const etherscanGetBalance = async (address: string, network: Network): Promise<any> => {
+  const response = await etherscan(network).get(`/api?module=account&action=balance&address=${address}&tag=latest&apikey=${apiKeyToken}`);
+  const {result} = response.data;
+  return result;
+}

@@ -1,7 +1,7 @@
 import {Grid, Typography} from '@material-ui/core';
 import React, {FC, ReactElement, useEffect, useState} from 'react';
 import styled from 'styled-components';
-import {Network, DepositKeyInterface, LanguageEnum} from '../types';
+import {DepositKeyInterface, LanguageEnum, Network} from '../types';
 import StepNavigation from "./StepNavigation";
 import DepositeUpLoad from "./DepositFlow/0-DepositeUpLoad";
 import ConnectWallet from "./DepositFlow/1-ConnectWallet";
@@ -64,8 +64,12 @@ const Deposit: FC<Props> = (props): ReactElement => {
   const [uri, setUri] = useState('')
   const [showCircular, setShowCircular] = useState(false)
   const [progress, setProgress] = useState(0)
-  const [walletConnectTimer, setWalletConnectTimer] = useState<NodeJS.Timer | null>(null)
   const [transactionTimer, setTransactionTimer] = useState<NodeJS.Timer | null>(null)
+
+
+  //why code like this: setWalletConnectTimer is not come into effect
+  //const [walletConnectTimer, setWalletConnectTimer] = useState<NodeJS.Timer | null>(null)
+  let walletConnectTimer: NodeJS.Timer | null = null
 
   const connectStatusUpdater = (connected: boolean, assets: boolean, fetching: boolean) => {
     setConnectStatus({connected, assets, fetching})
@@ -95,17 +99,30 @@ const Deposit: FC<Props> = (props): ReactElement => {
   }
 
   const pollingWalletConnect = () => {
-    if(walletConnectTimer === null){
-      setWalletConnectTimer(setInterval(getWalletMessage, 1500))
+    if (walletConnectTimer) {
+      clearInterval(walletConnectTimer)
     }
+    const timer = setInterval(getWalletMessage, 1500)
+    walletConnectTimer = timer
   }
 
   const finishedPollingWalletConnect = () => {
-    if (walletConnectTimer){
+    if (walletConnectTimer) {
       clearInterval(walletConnectTimer)
-      setWalletConnectTimer(null)
+      walletConnectTimer = null
     }
   }
+
+  useEffect(() => {
+    pollingWalletConnect()
+
+    // 在卸载时执行的函数
+    return () => {
+      finishedPollingWalletConnect()
+      window.walletApi.cleanGetAssets()
+      window.walletApi.killSession()
+    }
+  }, [])
 
   const prevClicked = () => {
     switch (step) {
@@ -227,10 +244,7 @@ const Deposit: FC<Props> = (props): ReactElement => {
                 addressStatus = {addressStatus}
                 addressStatusUpdater = {addressStatusUpdater}
                 walletErrorMsg={walletErrorMsg}
-                setWalletErrorMsg={setWalletErrorMsg}
                 language={props.language}
-                walletConnectTimer={walletConnectTimer}
-                setWalletConnectTimer={setWalletConnectTimer}
                 finishedPollingWalletConnect={finishedPollingWalletConnect}
             />
         );

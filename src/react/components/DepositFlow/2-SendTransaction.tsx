@@ -55,7 +55,6 @@ const SendTransaction: FC<SendTransactionProps> = (props): ReactElement => {
 
   useEffect(()=>{
     if(newItems !== null && newItems !== undefined){
-      console.log("改变-----------")
       props.setDepositKey(newItems)
     }
   }, [newItems, props.sendNum, finishedNum])

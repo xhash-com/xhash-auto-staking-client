@@ -3,10 +3,7 @@
  * This file contains the typescript type hinting for the preload.ts API.
  */
 
-import {
-  OpenDialogOptions,
-  OpenDialogReturnValue
-} from "electron";
+import {OpenDialogOptions, OpenDialogReturnValue} from "electron";
 
 import {Network} from "../react/types";
 
@@ -35,12 +32,13 @@ export interface IEncryptAPI {
   doEncrypt: (publicKey: string, keyPassword: string) => string | false;
 }
 
-export interface IWalletAPI{
+export interface IWalletAPI {
   connect: () => void,
-  killSession : () => void,
+  killSession: () => void,
   getWalletStatus: () => any,
   sendTransaction: (pubkey: string, withdrawal_credentials: string, signature: string, deposit_data_root: string, amount: number, network: Network) => any,
-  testSendTransaction : () => any
+  testSendTransaction: () => any,
+  cleanGetAssets: () => void
 }
 
 export interface ITransactionAPI{

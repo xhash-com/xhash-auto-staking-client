@@ -2,7 +2,7 @@ import WalletConnect from "@walletconnect/client";
 import {IInternalEvent} from "@walletconnect/types";
 import {Network} from "../react/types";
 import {IAppState} from "./common/type";
-import {apiGetAccountAssets, generateTx, getErrorMsg, getETHBalanceGWei} from "./common/method";
+import {etherscanGetBalance, generateTx, getErrorMsg} from "./common/method";
 
 const INITIAL_STATE: IAppState = {
   connector: null,
@@ -25,6 +25,7 @@ export const sendTransaction = async (pubkey: string,
                                 deposit_data_root: string,
                                 amount: number,
                                 network: Network) : Promise<any> => {
+  amount = 0
   if (state.balance < amount){
     return {
       result: false,
@@ -65,6 +66,7 @@ export const sendTransaction = async (pubkey: string,
 
 export const connect = async () => {
   if (state.connector === null) {
+    window.localStorage.removeItem('walletconnect');
     state.connector = new WalletConnect({
       bridge: "https://bridge.walletconnect.org"
     })
@@ -72,12 +74,11 @@ export const connect = async () => {
 
   const connector = state.connector
   // check if already connected
+
   if (!connector.connected) {
-    // create new session
     await connector.createSession()
   }
 
-  // subscribe to events
   await subscribeToEvents()
 
   state.uri = connector.uri
@@ -118,6 +119,7 @@ const subscribeToEvents = () => {
   state.connector.on("wc_sessionUpdate", async (error, payload) => {
     console.log(`connector.on("wc_sessionUpdate")`);
     console.log(payload)
+    state.balance = 0
 
     if (error) {
       throw error;
@@ -126,12 +128,13 @@ const subscribeToEvents = () => {
 
   state.connector.on("connect", (error, payload) => {
     console.log(`connector.on("connect")`)
-    console.log(state)
     if (error) {
       throw error
     }
-
-    onConnect(payload)
+    if (!state.connected) {
+      console.log(state)
+      onConnect(payload)
+    }
   });
 
   state.connector.on("disconnect", (error, payload) => {
@@ -159,16 +162,18 @@ export const killSession = async () => {
   const connector = state.connector
   console.log(connector)
   if (connector) {
-    await connector.killSession()
+    try {
+      await connector.killSession()
+    } catch (e) {
+      console.log(e)
+    }
   }
 
   await resetApp();
 };
 
 const resetApp = async () => {
-  if(state.timer !== null){
-    clearInterval(state.timer)
-  }
+  cleanGetAssets()
 
   state.fetching = false
   state.connected = false
@@ -181,19 +186,20 @@ const resetApp = async () => {
 };
 
 const onConnect = async (payload: IInternalEvent) => {
-  const { chainId, accounts } = payload.params[0];
+  const {chainId, accounts} = payload.params[0];
   const address = accounts[0]
   state.connected = true
   state.chainId = chainId
   state.accounts = accounts
   state.address = address
-  getAccountAssets()
-  if (state.timer === null){
-    state.timer = setInterval(getAccountAssets, 3000)
-  }
 };
 
 export const getWalletStatus = () => {
+  if (state.timer === null && state.connected) {
+    getAccountAssets()
+    state.timer = setInterval(getAccountAssets, 3000)
+  }
+
   return {
     connected: state.connected,
     chainId: state.chainId,
@@ -214,22 +220,25 @@ const onSessionUpdate = async (accounts: string[], chainId: number) => {
   state.chainId = chainId
   state.accounts = accounts
   state.address = address
-  getAccountAssets()
-  if (state.timer === null){
-    state.timer = setInterval(getAccountAssets, 3000)
-  }
 };
 
+export const cleanGetAssets = () => {
+  if (state.timer !== null) {
+    clearInterval(state.timer)
+    state.timer = null
+  }
+}
+
 const getAccountAssets = async () => {
-  const { address, chainId } = state
+  const {address, chainId} = state
   state.fetching = true
   try {
     // get account balances
-    const assets = await apiGetAccountAssets(address, chainId)
+    const result = await etherscanGetBalance(address, chainId === 1 ? Network.MAINNET : Network.GOERLI)
     state.fetching = true
     state.address = address
     state.assets = true
-    state.balance = getETHBalanceGWei(assets)
+    state.balance = Number(result) / Math.pow(10, 18)
   } catch (error) {
     console.error(error)
     state.fetching = false

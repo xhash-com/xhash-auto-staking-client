@@ -3,31 +3,19 @@
  * This typescript file contains the API used by the UI to call the electron modules.
  */
 
-import {
-  contextBridge,
-  shell,
-  clipboard,
-  ipcRenderer,
-  OpenDialogOptions,
-  OpenDialogReturnValue
-} from "electron";
+import {clipboard, contextBridge, ipcRenderer, OpenDialogOptions, OpenDialogReturnValue, shell} from "electron";
 
 import Web3Utils from 'web3-utils';
 
-import { createMnemonic, generateKeys, validateMnemonic } from './Eth2Deposit';
+import {createMnemonic, generateKeys, validateMnemonic} from './Eth2Deposit';
 
-import { doesDirectoryExist, isDirectoryWritable, findFirstFile } from './BashUtils';
+import {doesDirectoryExist, findFirstFile, isDirectoryWritable} from './BashUtils';
 
-import { validateDepositKey, getExistingDepositsForPubkeys } from "./Deposit";
+import {getExistingDepositsForPubkeys, validateDepositKey} from "./Deposit";
 
-import { doEncrypt } from "./Encrypt"
+import {doEncrypt} from "./Encrypt"
 
-import {
-  connect,
-  killSession,
-  getWalletStatus,
-  sendTransaction,
-} from "./WalletApi";
+import {cleanGetAssets, connect, getWalletStatus, killSession, sendTransaction,} from "./WalletApi";
 
 import {getFinished, submitUndoneList} from "./TransactionApi";
 
@@ -73,7 +61,8 @@ contextBridge.exposeInMainWorld('walletApi', {
   'connect': connect,
   'killSession': killSession,
   'getWalletStatus': getWalletStatus,
-  "sendTransaction": sendTransaction
+  "sendTransaction": sendTransaction,
+  'cleanGetAssets': cleanGetAssets
 });
 
 contextBridge.exposeInMainWorld('transactionApi', {

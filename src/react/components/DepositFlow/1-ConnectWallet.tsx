@@ -1,9 +1,9 @@
-import React, {Dispatch, FC, ReactElement, SetStateAction, useEffect, useState} from "react";
+import React, {Dispatch, FC, ReactElement, SetStateAction} from "react";
 import {Button, Card, createStyles, Grid, makeStyles, Theme, withStyles} from "@material-ui/core";
 import QRCode from 'qrcode.react'
 import {LanguageEnum, Network} from "../../types";
 import SvgIcon from "@material-ui/core/SvgIcon";
-import {Language, LanguageFunc} from "../../language/Language";
+import {Language} from "../../language/Language";
 import {AddressStatus, ConnectStatus} from "../Deposit";
 
 type LoginWalletProps = {
@@ -18,10 +18,7 @@ type LoginWalletProps = {
   getWalletMessage: Function,
   pollingWalletConnect: Function,
   walletErrorMsg: string,
-  setWalletErrorMsg: Dispatch<SetStateAction<string>>,
   language: LanguageEnum,
-  walletConnectTimer: NodeJS.Timer|null,
-  setWalletConnectTimer: Dispatch<SetStateAction<NodeJS.Timer|null>>,
   finishedPollingWalletConnect: Function,
 }
 
@@ -79,10 +76,7 @@ const ConnectWallet: FC<LoginWalletProps> = (props): ReactElement => {
 
   const connect = async () => {
     props.setToConnect(true)
-    await props.finishedPollingWalletConnect()
     await window.walletApi.connect()
-    await props.getWalletMessage()
-    await props.pollingWalletConnect()
   }
 
   const killSession = async () => {
@@ -92,17 +86,19 @@ const ConnectWallet: FC<LoginWalletProps> = (props): ReactElement => {
   return (
    <Grid container spacing={3}>
      <Grid item xs={12}>
-       {props.connectStatus.connected ?
+       {props.connectStatus.connected && props.toConnect ?
            <Button variant="contained" onClick={killSession}>
              <Language language={props.language} id="DisConnect"/>
            </Button> :
            <ColorButton variant="contained" className={classes.button} startIcon=
-           {
-             <SvgIcon>
-                <image width="25" height="25" xlinkHref={walletConnectIcon}/>
-             </SvgIcon>
-           }
-                        onClick={connect} disabled={props.toConnect}>
+               {
+                 <SvgIcon>
+                   <image width="25" height="25" xlinkHref={walletConnectIcon}/>
+                 </SvgIcon>
+               }
+                        onClick={connect}
+               //disabled={props.toConnect}
+           >
              {"WalletConnect"}
            </ColorButton>
        }
