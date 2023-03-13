@@ -25,7 +25,6 @@ export const sendTransaction = async (pubkey: string,
                                 deposit_data_root: string,
                                 amount: number,
                                 network: Network) : Promise<any> => {
-  amount = 0
   if (state.balance < amount){
     return {
       result: false,
