@@ -56,14 +56,14 @@ const Upload: FC<Props> = (props): ReactElement => {
 
   let url = "https://www.xhash.com:8000";
   let uploadPublicKey = '-----BEGIN RSA Public Key-----\n' +
-    'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAygtfr3vu2BzNIWgWbU7A\n' +
-    '8/dwWFruEFGga+KCXGZayDnOqNw/RK3dTwPB9lo0LTYlzgNmJ1XFTDx+MvH+mhFq\n' +
-    'KdYnvUMP2iespWmDurjg9Tv5jAh9jPkIhDBE/IaDw7sCdaFSEUI2dcH5vj2LUFnn\n' +
-    'kGSwEcEZ97VZGy+O4m7yc28LkYnFmy9ZRAgN7VcuDn4j/AeVZMVFu6roCa/nFaOo\n' +
-    'Mm41/5jOpv9O1fwW10l0xN2n/D+tOyJrQuzVtD7UymJdE/o284EN58m1b/1aJPJF\n' +
-    'OlDDkGczQiDxoYkWNjImT+7pd1IRtKgd5dt4prT4t5vnmhdgeljFYJX78SG1H77q\n' +
-    'xwIDAQAB\n' +
-    '-----END RSA Public Key-----\n';
+      'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAovobGpjdwazXFP0Cac7R\n' +
+      'b2XayXObXhQor7NK+PZzjHaFZk0RZhbgOsZuKxg7N+XOZf+zUwzDyUcp5Atl+JGG\n' +
+      'oOropD3gi4GEz49I2I6173AKOg8Q+DpL1d4bnrPIr9njbB4vHWXGq2IgOi1Rl606\n' +
+      'YabR4x4H6RAyVe/+Ox7Y/ffdoTDe1jiWlMULF/em/Ua1sX/ue92uzqh1KslbndZh\n' +
+      '/+IU/6l20SQWxhf+mSuQRfoLe8lid/gTxhiXfVlx/n22N4+MITlt3qvGn1yCAkJl\n' +
+      '7OVIcnjynfh1F3AG0Lr+zwB0gdyf6c8mVsbeDPbpGBkMm2DkUlwO1MacWzaQqgBY\n' +
+      'awIDAQAB\n' +
+      '-----END RSA Public Key-----\n';
 
   const prevLabel = () => {
     switch (step) {
