@@ -1,12 +1,12 @@
-import {Grid, Typography} from '@material-ui/core';
 import React, {FC, ReactElement, useEffect, useState} from 'react';
 import styled from 'styled-components';
-import {DepositKeyInterface, LanguageEnum, Network} from '../types';
+import {DepositKeyInterface, DepositStatus, LanguageEnum, Network, TransactionStatus} from '../types';
 import StepNavigation from "./StepNavigation";
 import DepositeUpLoad from "./DepositFlow/0-DepositeUpLoad";
 import ConnectWallet from "./DepositFlow/1-ConnectWallet";
 import SendTransaction from "./DepositFlow/2-SendTransaction";
 import {Language, LanguageFunc} from "../language/Language";
+import {Grid, Typography} from "@material-ui/core";
 
 const ContentGrid = styled(Grid)`
   height: 320px;
@@ -37,6 +37,12 @@ export type AddressStatus = {
   netword: Network | null
 }
 
+export type depositStatus = {
+  transactionStatus: TransactionStatus;
+  txHash?: string;
+  depositStatus: DepositStatus;
+}
+
 /**
  * This is the final page displaying information about the keys
  *
@@ -65,6 +71,13 @@ const Deposit: FC<Props> = (props): ReactElement => {
   const [showCircular, setShowCircular] = useState(false)
   const [progress, setProgress] = useState(0)
   const [transactionTimer, setTransactionTimer] = useState<NodeJS.Timer | null>(null)
+  const [easySendAll, setEasySendAll] = useState(false)
+  const [undoDepositKey, setUndoDepositKey] = useState<DepositKeyInterface[]>([]);
+  const [easyModeStatus, setEastModeStatus] = useState<depositStatus>({
+    transactionStatus: TransactionStatus.READY,
+    txHash: '',
+    depositStatus: DepositStatus.VERIFYING
+  })
 
 
   //why code like this: setWalletConnectTimer is not come into effect
@@ -92,7 +105,7 @@ const Deposit: FC<Props> = (props): ReactElement => {
         break
     }
 
-    addressStatusUpdater(wallet.address, wallet.balance/Math.pow(10,9), network)
+    addressStatusUpdater(wallet.address, wallet.balance, network)
     connectStatusUpdater(wallet.connected, wallet.assets, wallet.fetching)
     setWalletErrorMsg(props.network !== network ? LanguageFunc("Wrong_Network", props.language) + props.network : '')
     setUri(wallet.uri)
@@ -261,6 +274,13 @@ const Deposit: FC<Props> = (props): ReactElement => {
                 finishedNum={finishedNum}
                 setFinishedNum={setFinishedNum}
                 language={props.language}
+                easySendAll={easySendAll}
+                setEasySendAll={setEasySendAll}
+                addressStatus={addressStatus}
+                undoDepositKey={undoDepositKey}
+                setUndoDepositKey={setUndoDepositKey}
+                easyModeStatus={easyModeStatus}
+                setEastModeStatus={setEastModeStatus}
             />
         );
       default:

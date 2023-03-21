@@ -1,5 +1,5 @@
-import React, { FC, ReactElement } from "react";
-import { Grid, Button } from "@material-ui/core";
+import React, {FC, ReactElement} from "react";
+import {Button, Grid} from "@material-ui/core";
 import styled from "styled-components";
 
 type Props = {
@@ -16,7 +16,7 @@ type Props = {
 
 const FootGrid = styled(Grid)`
   position: fixed;
-  bottom: 65;
+  bottom: 50;
 `;
 
 /**

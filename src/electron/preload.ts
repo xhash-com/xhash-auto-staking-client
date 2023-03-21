@@ -15,7 +15,14 @@ import {getExistingDepositsForPubkeys, validateDepositKey} from "./Deposit";
 
 import {doEncrypt} from "./Encrypt"
 
-import {cleanGetAssets, connect, getWalletStatus, killSession, sendTransaction,} from "./WalletApi";
+import {
+  cleanGetAssets,
+  connect,
+  getWalletStatus,
+  killSession,
+  sendTransaction,
+  sendTransaction_All,
+} from "./WalletApi";
 
 import {getFinished, submitUndoneList} from "./TransactionApi";
 
@@ -62,6 +69,7 @@ contextBridge.exposeInMainWorld('walletApi', {
   'killSession': killSession,
   'getWalletStatus': getWalletStatus,
   "sendTransaction": sendTransaction,
+  "sendTransaction_All": sendTransaction_All,
   'cleanGetAssets': cleanGetAssets
 });
 

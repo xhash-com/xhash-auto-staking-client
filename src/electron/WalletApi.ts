@@ -2,7 +2,7 @@ import WalletConnect from "@walletconnect/client";
 import {IInternalEvent} from "@walletconnect/types";
 import {Network} from "../react/types";
 import {IAppState} from "./common/type";
-import {etherscanGetBalance, generateTx, getErrorMsg} from "./common/method";
+import {etherscanGetBalance, generateTx, generateTx_All, getErrorMsg} from "./common/method";
 
 const INITIAL_STATE: IAppState = {
   connector: null,
@@ -17,15 +17,59 @@ const INITIAL_STATE: IAppState = {
   timer: null,
 };
 
-const state: IAppState = { ...INITIAL_STATE };
+const state: IAppState = {...INITIAL_STATE};
+
+export const sendTransaction_All = async (pubkeys: string[],
+                                          withdrawal_credentials: string[],
+                                          signature: string[],
+                                          deposit_data_root: string[],
+                                          amount: number,
+                                          network: Network): Promise<any> => {
+  if (state.balance < amount) {
+    return {
+      result: false,
+      txHash: "",
+      msg: "INSUFFICIENT_FUNDS"
+    }
+  }
+
+  const tx = generateTx_All(state.address, pubkeys, withdrawal_credentials, signature, deposit_data_root, amount, network);
+
+  const returnResult = {
+    result: false,
+    txHash: "",
+    msg: ""
+  }
+
+  if (state.connector) {
+    await
+        state.connector
+            .sendTransaction(tx)
+            .then((result) => {
+              // Returns transaction id (hash)
+              console.log(result);
+              returnResult.result = true
+              returnResult.txHash = result
+            })
+            .catch((error) => {
+              // Error returned when rejected
+              console.log(error);
+
+              returnResult.result = false
+              returnResult.msg = getErrorMsg(String(error))
+            });
+  }
+
+  return returnResult;
+}
 
 export const sendTransaction = async (pubkey: string,
-                                withdrawal_credentials: string,
-                                signature: string,
-                                deposit_data_root: string,
-                                amount: number,
-                                network: Network) : Promise<any> => {
-  if (state.balance < amount){
+                                      withdrawal_credentials: string,
+                                      signature: string,
+                                      deposit_data_root: string,
+                                      amount: number,
+                                      network: Network): Promise<any> => {
+  if (state.balance < amount) {
     return {
       result: false,
       txHash: "",
@@ -237,7 +281,7 @@ const getAccountAssets = async () => {
     state.fetching = true
     state.address = address
     state.assets = true
-    state.balance = Number(result) / Math.pow(10, 18)
+    state.balance = Number((result / Math.pow(10, 18)).toFixed(5))
   } catch (error) {
     console.error(error)
     state.fetching = false

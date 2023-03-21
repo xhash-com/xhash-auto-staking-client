@@ -61,13 +61,31 @@ export const generateTx = (
     signature: string,
     deposit_data_root: string,
     amount: number,
-    network: Network) : Tx => {
+    network: Network): Tx => {
   const to = network === Network.GOERLI ? "0xff50ed3d0ec03aC01D4C79aAd74928BFF48a7b2b" : "0x00000000219ab540356cBB839Cbe05303d7705Fa";
   return {
     from: address,
     to: to,
     data: generateDepositData(pubkey, withdrawal_credentials, signature, deposit_data_root),
-    value: String(1000000000*amount)
+    value: String(1000000000 * amount)
+    //"0x1bc16d674ec800000"
+  }
+}
+
+export const generateTx_All = (
+    address: string,
+    pubkey: string[],
+    withdrawal_credentials: string[],
+    signature: string[],
+    deposit_data_root: string[],
+    amount: number,
+    network: Network): Tx => {
+  const to = network === Network.GOERLI ? "0x2cB1A746A8652dfbb0FC11BdA71Bd991EB2Fd52e" : "0xFA5f9EAa65FFb2A75de092eB7f3fc84FC86B5b18";
+  return {
+    from: address,
+    to: to,
+    data: generatedDataForDepositer(pubkey, withdrawal_credentials, signature, deposit_data_root),
+    value: String(1000000000 * amount)
     //"0x1bc16d674ec800000"
   }
 }
@@ -75,7 +93,7 @@ export const generateTx = (
 export const getErrorMsg = (error: string): string => {
   //insufficient funds
   console.log(error)
-  if (error.indexOf("insufficient funds") != -1){
+  if (error.indexOf("insufficient funds") != -1) {
     return "INSUFFICIENT_FUNDS"
   }else if(error.indexOf("User rejected the transaction") != -1){
     return "USER_REJECTED"

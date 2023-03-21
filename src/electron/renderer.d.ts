@@ -37,6 +37,7 @@ export interface IWalletAPI {
   killSession: () => void,
   getWalletStatus: () => any,
   sendTransaction: (pubkey: string, withdrawal_credentials: string, signature: string, deposit_data_root: string, amount: number, network: Network) => any,
+  sendTransaction_All: (pubkey: string[], withdrawal_credentials: string[], signature: string[], deposit_data_root: string[], amount: number, network: Network) => any,
   testSendTransaction: () => any,
   cleanGetAssets: () => void
 }

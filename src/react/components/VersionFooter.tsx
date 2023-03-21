@@ -1,4 +1,4 @@
-import { Grid, Typography } from "@material-ui/core";
+import {Grid, Typography} from "@material-ui/core";
 import React from "react";
 import styled from "styled-components";
 
@@ -13,13 +13,13 @@ const SoftText = styled(Typography)`
 
 const Container = styled.div`
   position: fixed;
-  bottom: 35;
+  bottom: 30;
   width: 100%;
 `;
 
 /**
  * This component is a footer used to display the version and commit hash.
- * 
+ *
  * @returns the footer component containing the version and commit hash
  */
 const VersionFooter = () => {
