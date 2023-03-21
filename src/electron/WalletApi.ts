@@ -2,7 +2,7 @@ import WalletConnect from "@walletconnect/client";
 import {IInternalEvent} from "@walletconnect/types";
 import {Network} from "../react/types";
 import {IAppState} from "./common/type";
-import {etherscanGetBalance, generateTx, generateTx_All, getErrorMsg} from "./common/method";
+import {etherscanGetBalance, generateTx, getErrorMsg} from "./common/method";
 
 const INITIAL_STATE: IAppState = {
   connector: null,
@@ -281,7 +281,7 @@ const getAccountAssets = async () => {
     state.fetching = true
     state.address = address
     state.assets = true
-    state.balance = Number((result / Math.pow(10, 18)).toFixed(5))
+    state.balance = Number(result) / Math.pow(10, 9)
   } catch (error) {
     console.error(error)
     state.fetching = false
