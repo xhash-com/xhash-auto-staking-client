@@ -237,7 +237,7 @@ const getAccountAssets = async () => {
     state.fetching = true
     state.address = address
     state.assets = true
-    state.balance = Number(result) / Math.pow(10, 18)
+    state.balance = Number(result) / Math.pow(10, 9)
   } catch (error) {
     console.error(error)
     state.fetching = false
