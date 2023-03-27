@@ -54,7 +54,7 @@ const Upload: FC<Props> = (props): ReactElement => {
   const [keyPasswordStrengthError, setKeyPasswordStrengthError] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(false);
 
-  let url = "https://www.xhash.com:8000";
+  let url = "https://api.xhash.com:8000";
   let uploadPublicKey = '-----BEGIN RSA Public Key-----\n' +
       'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAovobGpjdwazXFP0Cac7R\n' +
       'b2XayXObXhQor7NK+PZzjHaFZk0RZhbgOsZuKxg7N+XOZf+zUwzDyUcp5Atl+JGG\n' +
