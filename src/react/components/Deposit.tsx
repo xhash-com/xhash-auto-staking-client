@@ -1,23 +1,21 @@
 import React, {FC, ReactElement, useEffect, useState} from 'react';
 import styled from 'styled-components';
-import {DepositKeyInterface, DepositStatus, LanguageEnum, Network, TransactionStatus} from '../types';
+import {DepositKeyBatch, DepositKeyInterface, DepositStatus, LanguageEnum, Network, TransactionStatus} from '../types';
 import StepNavigation from "./StepNavigation";
 import DepositeUpLoad from "./DepositFlow/0-DepositeUpLoad";
 import ConnectWallet from "./DepositFlow/1-ConnectWallet";
 import SendTransaction from "./DepositFlow/2-SendTransaction";
 import {Language, LanguageFunc} from "../language/Language";
-import {Grid, Typography} from "@material-ui/core";
+import {Grid, Switch, Tooltip, Typography} from "@material-ui/core";
+
+const BigTextSpan = styled("span")`
+  font-size: 15px;
+`;
 
 const ContentGrid = styled(Grid)`
   height: 320px;
   margin-top: 16px;
 `;
-
-const FootGrid = styled(Grid)`
-  position: fixed;
-  bottom: 96;
-`;
-
 type Props = {
   onStepBack: () => void,
   onStepForward: () => void,
@@ -53,7 +51,6 @@ export type depositStatus = {
  * @returns the react element to render
  */
 const Deposit: FC<Props> = (props): ReactElement => {
-
   const intitialStep = 0;
   const [step, setStep] = useState(intitialStep);
   const [fileName,setFileName] = useState("");
@@ -72,16 +69,11 @@ const Deposit: FC<Props> = (props): ReactElement => {
   const [progress, setProgress] = useState(0)
   const [transactionTimer, setTransactionTimer] = useState<NodeJS.Timer | null>(null)
   const [easySendAll, setEasySendAll] = useState(false)
+  const [ableChangeMode, setAbleChangeMode] = useState(true)
   const [undoDepositKey, setUndoDepositKey] = useState<DepositKeyInterface[]>([]);
-  const [easyModeStatus, setEastModeStatus] = useState<depositStatus>({
-    transactionStatus: TransactionStatus.READY,
-    txHash: '',
-    depositStatus: DepositStatus.VERIFYING
-  })
+  const [depositKeyBatch, setDepositKeyBatch] = useState<DepositKeyBatch[]>([]);
+  const [batchNumber, setBatchNumber] = useState(0);
 
-
-  //why code like this: setWalletConnectTimer is not come into effect
-  //const [walletConnectTimer, setWalletConnectTimer] = useState<NodeJS.Timer | null>(null)
   let walletConnectTimer: NodeJS.Timer | null = null
 
   const connectStatusUpdater = (connected: boolean, assets: boolean, fetching: boolean) => {
@@ -105,10 +97,20 @@ const Deposit: FC<Props> = (props): ReactElement => {
         break
     }
 
-    addressStatusUpdater(wallet.address, wallet.balance, network)
+    addressStatusUpdater(wallet.address, wallet.balance / Math.pow(10, 9), network)
     connectStatusUpdater(wallet.connected, wallet.assets, wallet.fetching)
     setWalletErrorMsg(props.network !== network ? LanguageFunc("Wrong_Network", props.language) + props.network : '')
     setUri(wallet.uri)
+  }
+
+  const disableChangeMode = () => {
+    setAbleChangeMode(false)
+  }
+
+  const handleChange = (event: { target: { checked: boolean | ((prevState: boolean) => boolean); }; }) => {
+    if (ableChangeMode) {
+      setEasySendAll(event.target.checked)
+    }
   }
 
   const pollingWalletConnect = () => {
@@ -279,8 +281,11 @@ const Deposit: FC<Props> = (props): ReactElement => {
                 addressStatus={addressStatus}
                 undoDepositKey={undoDepositKey}
                 setUndoDepositKey={setUndoDepositKey}
-                easyModeStatus={easyModeStatus}
-                setEastModeStatus={setEastModeStatus}
+                depositKeyBatch={depositKeyBatch}
+                setDepositKeyBatch={setDepositKeyBatch}
+                disableChangeMode={disableChangeMode}
+                batchNumber={batchNumber}
+                setBatchNumber={setBatchNumber}
             />
         );
       default:
@@ -290,10 +295,34 @@ const Deposit: FC<Props> = (props): ReactElement => {
 
   return (
       <Grid container direction="column" spacing={2}>
-        <Grid item>
-          <Typography variant="h1">
-            <Language language={props.language} id="Deposit"/>
-          </Typography>
+        <Grid container item direction="row" justifyContent="space-evenly" alignItems="flex-end">
+          <Grid item xs={4}/>
+          <Grid item xs={4}>
+            <Typography variant="h1">
+              <Language language={props.language} id="Deposit"/>
+            </Typography>
+          </Grid>
+          <Grid container item xs={4}>
+            {step === 2 && (
+                <Typography component="div">
+                  <Tooltip title={(
+                      <BigTextSpan>
+                        <Language language={props.language} id={"Batch_Notice_1"}/>
+                        <br/>
+                        <Language language={props.language} id={"Batch_Notice_2"}/>
+                      </BigTextSpan>
+                  )}>
+                    <Grid component="label" container alignItems="center" spacing={1}>
+                      <Grid item><Language language={props.language} id={"Normal"}/></Grid>
+                      <Grid item>
+                        <Switch checked={easySendAll} onChange={handleChange} color={"secondary"}/>
+                      </Grid>
+                      <Grid item><Language language={props.language} id={"Batch"}/></Grid>
+                    </Grid>
+                  </Tooltip>
+                </Typography>
+            )}
+          </Grid>
         </Grid>
         <ContentGrid item container>
           <Grid item xs={12}>

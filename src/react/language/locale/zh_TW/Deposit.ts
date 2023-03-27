@@ -33,7 +33,23 @@ const Deposit = {
   "READY_FOR_DEPOSIT": "準備存款",
   "Wallet_DisConnect": "錢包已斷開連接，請重新連接",
   "Wallet_Notice_Title": "請確保錢包應用程序已打開",
-  "Wallet_Running_Notice":"發送交易過程中請確保您的錢包APP在前台運行，否則可能會導致交易發送失敗"
+  "Wallet_Running_Notice": "發送交易過程中請確保您的錢包APP在前台運行，否則可能會導致交易發送失敗",
+  "Batch_mode": "批量模式",
+  "Invalid_number": "無效的數目",
+  "Summary_Title_1": "這是根據您的存款數據文件可以進行的可能存款的列表。",
+  "Summary_Title_2_1": "存款數據文件中的節點總數：",
+  "Summary_Title_2_2": "已存款：",
+  "Summary_Title_2_3": "可以進行的新存款：",
+  "Summary_Title_3": "您要發送的存款數量",
+  "Summary_Title_4_1": "發送金額：",
+  "Summary_Title_4_2": "可用的：",
+  "Just_Confirm": "確認",
+  "VALIDATORS": "驗證者",
+  "Validator": "驗證者",
+  "Normal": "常規模式",
+  "Batch": "批量模式",
+  "Batch_Notice_1": "批量模式: 將通過代理合約為您簡化操作，單次交易最多為您發送不超過100個的存款請求",
+  "Batch_Notice_2": "注意: 發送交易后無法切換模式",
 }
 
 export default Deposit

@@ -71,3 +71,17 @@ export interface twoFA {
   twoFactor: boolean,
   twoFactorToken: string
 }
+
+export interface DepositKeyBatch {
+  pubkeys: string[];
+  withdrawal_credentials: string[];
+  amount: number;
+  signatures: string[];
+  deposit_data_roots: string[];
+  transactionStatus: TransactionStatus;
+  txHash?: string;
+  depositStatus: DepositStatus;
+  number: number;
+}
+
+export const BatchLimit = 100

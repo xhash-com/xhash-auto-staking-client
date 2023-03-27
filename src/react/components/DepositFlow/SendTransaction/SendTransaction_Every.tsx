@@ -19,7 +19,6 @@ const useStyles = makeStyles({
     minWidth: 600,
   },
   tableBody: {
-    width: 'calc(100vw - 80px)',
     maxHeight: 'calc(100vh - 375px)',
   },
 });
@@ -36,17 +35,13 @@ type SendTransactionProps = {
   transactionTimer: NodeJS.Timer | null,
   setTransactionTimer: Dispatch<SetStateAction<NodeJS.Timer | null>>,
   easySendAll: boolean,
-  setEasySendAll: Dispatch<SetStateAction<boolean>>
+  setEasySendAll: Dispatch<SetStateAction<boolean>>,
+  disableChangeMode: Function
 }
 
 const SendTransaction_Every: FC<SendTransactionProps> = (props): ReactElement => {
   const classes = useStyles();
   const [disable, setDisable] = useState(false);
-
-  const [open, setOpen] = React.useState(true);
-  const handleClose = () => {
-    setOpen(false);
-  };
 
   let newItems = props.depositKey
   let finishedNum = props.finishedNum
@@ -58,6 +53,7 @@ const SendTransaction_Every: FC<SendTransactionProps> = (props): ReactElement =>
   }, [newItems, props.sendNum, finishedNum])
 
   async function confirmDeposit(row: DepositKeyInterface, index: number) {
+    props.disableChangeMode()
     setDisable(true)
     newItems[index].transactionStatus = TransactionStatus.STARTED
     const result = await window.walletApi.sendTransaction(row.pubkey, row.withdrawal_credentials, row.signature, row.deposit_data_root, row.amount, props.network)

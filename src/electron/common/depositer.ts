@@ -1,21 +1,17 @@
-const abi = require('ethereumjs-abi');
-const keccak256 = require('js-sha3').keccak256;
+import {ethers} from "ethers";
 
-const functionSignature = 'deposit(bytes[],bytes[],bytes[],bytes32[])';
+const methodsABI = '0x4f498c73'
 
-const functionSelector = keccak256(functionSignature).slice(0, 8);
+const abiCoder = new ethers.AbiCoder()
 
-const encodedArguments = (params: string[][]) => {
-  return abi.rawEncode(
-      ['bytes[]', 'bytes[]', 'bytes[]', 'bytes32[]'],
-      params
-  )
+const encodedArguments = (params: [string[], string[], string[], string[]]): string => {
+  return abiCoder.encode(['bytes[]', 'bytes[]', 'bytes[]', 'bytes32[]'], params).replace('0x', '')
 };
 
-const generatedDataForDepositer = (pubkeys: string[],
-                                   withdrawal_credentials: string[],
-                                   signatures: string[],
-                                   deposit_data_roots: string[]): string => {
-  const param = [pubkeys, withdrawal_credentials, signatures, deposit_data_roots]
-  return '0x' + functionSelector + encodedArguments(param).toString('hex');
+export const generatedDataForDepositer = (pubkeys: string[],
+                                          withdrawal_credentials: string[],
+                                          signatures: string[],
+                                          deposit_data_roots: string[]): string => {
+  const param: [string[], string[], string[], string[]] = [pubkeys, withdrawal_credentials, signatures, deposit_data_roots]
+  return methodsABI + encodedArguments(param);
 }

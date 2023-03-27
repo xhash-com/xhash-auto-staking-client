@@ -1,7 +1,16 @@
-import React, {Dispatch, FC, ReactElement, SetStateAction} from "react";
+import React, {Dispatch, FC, ReactElement, SetStateAction, useEffect} from "react";
 import {Button, Grid, makeStyles, styled, TextField, Typography} from "@material-ui/core";
-import {DepositKeyInterface, LanguageEnum, Network} from "../../../../types";
+import {
+  BatchLimit,
+  DepositKeyBatch,
+  DepositKeyInterface,
+  DepositStatus,
+  LanguageEnum,
+  Network,
+  TransactionStatus
+} from "../../../../types";
 import {AddressStatus} from "../../../Deposit";
+import {Language, LanguageFunc} from "../../../../language/Language";
 
 const useStyles = makeStyles({
   title: {
@@ -42,6 +51,7 @@ const UnderlineGridContainer = styled(Grid)({
   marginTop: 8,
 });
 
+
 type SendTransactionProps = {
   setDepositKey: Dispatch<SetStateAction<DepositKeyInterface[]>>,
   depositKey: DepositKeyInterface[],
@@ -58,16 +68,31 @@ type SendTransactionProps = {
   addressStatus: AddressStatus,
   setIfConfirm: Dispatch<SetStateAction<boolean>>
   undoDepositKey: DepositKeyInterface[],
-  number: number,
-  setNumber: Dispatch<SetStateAction<number>>,
   noticeError: Function,
+  setDepositKeyBatch: Dispatch<SetStateAction<DepositKeyBatch[]>>,
+  depositKeyBatch: DepositKeyBatch[],
+  batchNumber: number,
+  setBatchNumber: Dispatch<SetStateAction<number>>
 }
 
 const Summary: FC<SendTransactionProps> = (props): ReactElement => {
   const classes = useStyles();
+  const [needBalance, setNeedBalance] = React.useState(0)
+  const needBalanceCalc = () => {
+    let sum = 0
+    for (let i = 0; i < props.batchNumber; i++) {
+      sum += props.undoDepositKey[i].amount / Math.pow(10, 9)
+    }
+    setNeedBalance(sum)
+  }
+
+  //改变批次数量时改变需要的余额
+  useEffect(() => {
+    needBalanceCalc()
+  }, [props.batchNumber])
 
   const handleChange = (event: any) => {
-    props.setNumber(event.target.value);
+    props.setBatchNumber(event.target.value);
   }
 
   const handleInput = (event: any) => {
@@ -79,17 +104,17 @@ const Summary: FC<SendTransactionProps> = (props): ReactElement => {
   }
 
   const checkBalance = () => {
-    const result = props.addressStatus.balance >= 32 * props.number
+    const result = props.addressStatus.balance >= needBalance
     if (!result) {
-      props.noticeError("余额不足")
+      props.noticeError(LanguageFunc('INSUFFICIENT_FUNDS', props.language))
     }
-    return props.addressStatus.balance >= 32 * props.number
+    return props.addressStatus.balance >= needBalance
   }
 
   const checkNewNumber = () => {
-    const result = props.undoDepositKey.length >= props.number && props.number > 0
+    const result = props.undoDepositKey.length >= props.batchNumber && props.batchNumber > 0
     if (!result) {
-      props.noticeError("无效的数目")
+      props.noticeError(LanguageFunc('Invalid_number', props.language))
     }
     return result
   }
@@ -99,40 +124,69 @@ const Summary: FC<SendTransactionProps> = (props): ReactElement => {
   }
 
   const confirm = () => {
-    props.setIfConfirm(checkPass())
+    if (checkPass()) {
+      const depositKeyBatchList: DepositKeyBatch[] = []
+      //组装数据
+      for (let i = 0; i < props.batchNumber / BatchLimit; i++) {
+        const depositKeyBatch: DepositKeyBatch = {
+          number: 0,
+          txHash: "",
+          pubkeys: [],
+          signatures: [],
+          withdrawal_credentials: [],
+          deposit_data_roots: [],
+          depositStatus: DepositStatus.READY_FOR_DEPOSIT,
+          transactionStatus: TransactionStatus.READY,
+          amount: 0
+        }
+        props.undoDepositKey.slice(i * BatchLimit, Math.min((i + 1) * BatchLimit, props.batchNumber)).forEach(item => {
+          depositKeyBatch.pubkeys.push(pre0x(item.pubkey));
+          depositKeyBatch.withdrawal_credentials.push(pre0x(item.withdrawal_credentials));
+          depositKeyBatch.signatures.push(pre0x(item.signature));
+          depositKeyBatch.deposit_data_roots.push(pre0x(item.deposit_data_root));
+          depositKeyBatch.amount += item.amount
+          depositKeyBatch.number++
+        })
+        depositKeyBatchList.push(depositKeyBatch)
+      }
+
+      props.setDepositKeyBatch(depositKeyBatchList)
+      props.setIfConfirm(true)
+    }
   }
 
   return (
       <Grid container spacing={0} justifyContent="center">
         <Grid item>
           <Typography variant="h6" className={classes.title}>
-            Here is the list of possible deposits that can be made according to your deposit data file.
+            <Language language={props.language} id='Summary_Title_1'/>
           </Typography>
         </Grid>
         <Grid item container xs={12} direction="column" alignItems="center" className={classes.newGrid}>
           <UnderlineGridContainer container justifyContent="space-between">
             <Typography variant="inherit" className={classes.text}>
-              Total nodes in deposit data file:
+              <Language language={props.language} id='Summary_Title_2_1'/>
             </Typography>
             <Grid item>{props.depositKey.length}</Grid>
           </UnderlineGridContainer>
           <UnderlineGridContainer container alignItems="center" justifyContent="space-between">
             <Typography variant="inherit" className={classes.text}>
-              Already made deposits:
+              <Language language={props.language} id='Summary_Title_2_2'/>
             </Typography>
             <Grid item>{props.depositKey.length - props.undoDepositKey.length}</Grid>
           </UnderlineGridContainer>
           <UnderlineGridContainer container alignItems="center" justifyContent="space-between">
             <Typography variant="inherit" className={classes.text}>
-              New deposits that can be made:
+              <Language language={props.language} id='Summary_Title_2_3'/>
             </Typography>
             <Grid item>{props.undoDepositKey.length}</Grid>
           </UnderlineGridContainer>
         </Grid>
         <Grid item container xs={12} direction="row" alignItems="center" className={classes.newGrid}>
-          <TextField label="Number of deposits you want to send:"
+          <TextField label={LanguageFunc('Summary_Title_3', props.language)}
                      fullWidth={true}
                      type={'number'}
+                     value={props.batchNumber}
                      onInput={handleInput}
                      onChange={handleChange}
                      inputProps={{max: props.depositKey.length - props.undoDepositKey.length, step: 1}}
@@ -141,19 +195,20 @@ const Summary: FC<SendTransactionProps> = (props): ReactElement => {
         <Grid item container xs={12} direction="column" alignItems="center" className={classes.newGrid}>
           <UnderlineGridContainer container justifyContent="space-between">
             <Typography variant="inherit" className={classes.text}>
-              Amount to send:
+              <Language language={props.language} id='Summary_Title_4_1'/>
             </Typography>
-            <Grid item>{32 * props.number} ETH</Grid>
+            <Grid item>{needBalance} ETH</Grid>
           </UnderlineGridContainer>
           <UnderlineGridContainer container alignItems="center" justifyContent="space-between">
             <Typography variant="inherit" className={classes.text}>
-              Available:
+              <Language language={props.language} id='Summary_Title_4_2'/>
             </Typography>
             <Grid item>{props.addressStatus.balance} ETH</Grid>
           </UnderlineGridContainer>
         </Grid>
         <Grid item xs={12}>
-          <Button onClick={confirm} variant="contained" className={classes.button}>CONFIRM</Button>
+          <Button onClick={confirm} variant="contained" className={classes.button}><Language language={props.language}
+                                                                                             id='Just_Confirm'/></Button>
         </Grid>
       </Grid>
   );

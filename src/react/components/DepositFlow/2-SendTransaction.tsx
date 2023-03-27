@@ -1,4 +1,4 @@
-import React, {Dispatch, FC, ReactElement, SetStateAction, useState} from "react";
+import React, {Dispatch, FC, ReactElement, SetStateAction, useEffect, useState} from "react";
 import {
   Button,
   Dialog,
@@ -10,22 +10,17 @@ import {
   IconButton,
   makeStyles
 } from "@material-ui/core";
-import {DepositKeyInterface, DepositStatus, LanguageEnum, Network} from "../../types";
-import {ChevronRight} from "@material-ui/icons";
+import {DepositKeyBatch, DepositKeyInterface, DepositStatus, LanguageEnum, Network,} from "../../types";
 import {Language} from "../../language/Language";
-import {AddressStatus, depositStatus} from "../Deposit";
+import {AddressStatus} from "../Deposit";
 import Depositer from "./SendTransaction/Depositer";
 import SendTransaction_Every from "./SendTransaction/SendTransaction_Every";
 import Snackbar from "@material-ui/core/Snackbar";
 import CloseIcon from "@material-ui/icons/Close";
 
 const useStyles = makeStyles({
-  IconButton: {
-    width: 40,
-    height: 'calc(100vh - 375px)',
-  },
   fullScreen: {
-    width: '100%',
+    width: 'calc(95%)',
   },
 });
 
@@ -44,9 +39,12 @@ type SendTransactionProps = {
   setEasySendAll: Dispatch<SetStateAction<boolean>>
   addressStatus: AddressStatus,
   undoDepositKey: DepositKeyInterface[],
-  setUndoDepositKey: Dispatch<SetStateAction<DepositKeyInterface[]>>
-  easyModeStatus: depositStatus,
-  setEastModeStatus: Dispatch<SetStateAction<depositStatus>>
+  setUndoDepositKey: Dispatch<SetStateAction<DepositKeyInterface[]>>,
+  depositKeyBatch: DepositKeyBatch[],
+  setDepositKeyBatch: Dispatch<SetStateAction<DepositKeyBatch[]>>
+  disableChangeMode: Function
+  batchNumber: number,
+  setBatchNumber: Dispatch<SetStateAction<number>>
 }
 
 const SendTransaction: FC<SendTransactionProps> = (props): ReactElement => {
@@ -56,6 +54,10 @@ const SendTransaction: FC<SendTransactionProps> = (props): ReactElement => {
   const [open, setOpen] = React.useState(true);
   const [errorInfo, setErrorInfo] = useState("");
   const [showError, setShowError] = useState(false);
+
+  useEffect(() => {
+    easyMode()
+  }, [])
 
   const noticeError = (str: string) => {
     setErrorInfo(str)
@@ -70,11 +72,11 @@ const SendTransaction: FC<SendTransactionProps> = (props): ReactElement => {
     setOpen(false);
   };
 
-  const startEasyMode = () => {
+  const easyMode = () => {
     const newDepositKey: DepositKeyInterface[] = []
     newDepositKey.push(...props.depositKey.filter(item => item.depositStatus === DepositStatus.READY_FOR_DEPOSIT))
     props.setUndoDepositKey(newDepositKey)
-    props.setEasySendAll(true)
+    props.setBatchNumber(newDepositKey.length)
   }
 
   const content = () => {
@@ -109,16 +111,9 @@ const SendTransaction: FC<SendTransactionProps> = (props): ReactElement => {
                 </DialogActions>
             </Dialog>
         </Grid>}
-        <Grid item className={props.easySendAll ? classes.fullScreen : ''}>
+        <Grid item className={classes.fullScreen}>
           {content()}
         </Grid>
-        {!props.easySendAll &&
-        <Grid container item className={classes.IconButton} alignItems="center">
-            <IconButton onClick={startEasyMode}>
-                <ChevronRight/>
-            </IconButton>
-        </Grid>
-        }
         <Snackbar
             anchorOrigin={{
               vertical: 'top',

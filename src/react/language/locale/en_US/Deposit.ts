@@ -33,7 +33,23 @@ const Deposit = {
   "READY_FOR_DEPOSIT": "READY_FOR_DEPOSIT",
   "Wallet_DisConnect": "The wallet is disconnected, please reconnect",
   "Wallet_Notice_Title": "Please ensure wallet app is open",
-  "Wallet_Running_Notice":"Please ensure that your wallet app is running in the foreground during the process of sending the transaction, otherwise the transaction may fail to be sent"
+  "Wallet_Running_Notice": "Please ensure that your wallet app is running in the foreground during the process of sending the transaction, otherwise the transaction may fail to be sent",
+  "Batch_mode": "Batch mode",
+  "Invalid_number": "Invalid number",
+  "Summary_Title_1": "Here is the list of possible deposits that can be made according to your deposit data file.",
+  "Summary_Title_2_1": "Total nodes in deposit data file:",
+  "Summary_Title_2_2": "Already made deposits:",
+  "Summary_Title_2_3": "New deposits that can be made:",
+  "Summary_Title_3": "Number of deposits you want to send",
+  "Summary_Title_4_1": "Amount to send:",
+  "Summary_Title_4_2": "Available:",
+  "Just_Confirm": "CONFIRM",
+  "VALIDATORS": "VALIDATORS",
+  "Validator": "Validator",
+  "Normal": "Normal Mode",
+  "Batch": "Batch Mode",
+  "Batch_Notice_1": "Batch mode: The agent contract will simplify the operation for you, and a single transaction will send you no more than 100 deposit requests",
+  "Batch_Notice_2": "Note: Can't switch modes after sending a transaction",
 }
 
 export default Deposit

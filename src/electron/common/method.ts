@@ -1,6 +1,8 @@
 import {IAssetData, IGasPrices, IParsedTx, Tx} from "./type";
 import axios, {AxiosInstance} from "axios";
 import {Network} from "../../react/types";
+import {generatedDataForDepositer} from "./depositer";
+import BigNumber from "bignumber.js";
 
 const timers: NodeJS.Timer[] = []
 const apiKeyToken = 'A6139HD6GFIYGTH5HXD468K6AWCW96W6RU'
@@ -62,12 +64,15 @@ export const generateTx = (
     deposit_data_root: string,
     amount: number,
     network: Network): Tx => {
-  const to = network === Network.GOERLI ? "0xff50ed3d0ec03aC01D4C79aAd74928BFF48a7b2b" : "0x00000000219ab540356cBB839Cbe05303d7705Fa";
+  const to = network === Network.GOERLI ? "0x35199FeFC3c638E9c64211E42d592509D01604b3" : "0x00000000219ab540356cBB839Cbe05303d7705Fa";
+  debugger
   return {
     from: address,
     to: to,
     data: generateDepositData(pubkey, withdrawal_credentials, signature, deposit_data_root),
-    value: String(1000000000 * amount)
+    //String转16进制字符串
+
+    value: pre0x(new BigNumber(amount).multipliedBy(10 ** 9).toString(16))
     //"0x1bc16d674ec800000"
   }
 }
@@ -80,12 +85,12 @@ export const generateTx_All = (
     deposit_data_root: string[],
     amount: number,
     network: Network): Tx => {
-  const to = network === Network.GOERLI ? "0x2cB1A746A8652dfbb0FC11BdA71Bd991EB2Fd52e" : "0xFA5f9EAa65FFb2A75de092eB7f3fc84FC86B5b18";
+  const to = network === Network.GOERLI ? "0x85f91B67aBc683e5Ae0bd6489170A7648975DFc6" : "0xa86341E5C278443c8648be44110167E1bbD9Cba6";
   return {
     from: address,
     to: to,
     data: generatedDataForDepositer(pubkey, withdrawal_credentials, signature, deposit_data_root),
-    value: String(1000000000 * amount)
+    value: pre0x(new BigNumber(amount).multipliedBy(10 ** 9).toString(16))
     //"0x1bc16d674ec800000"
   }
 }
@@ -162,4 +167,8 @@ export const etherscanGetBalance = async (address: string, network: Network): Pr
   const response = await etherscan(network).get(`/api?module=account&action=balance&address=${address}&tag=latest&apikey=${apiKeyToken}`);
   const {result} = response.data;
   return result;
+}
+
+export const pre0x = (param: string): string => {
+  return param.indexOf('0x') === 0 ? param : `0x${param}`;
 }

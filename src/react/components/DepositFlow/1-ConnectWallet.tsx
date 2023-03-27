@@ -149,7 +149,7 @@ const ConnectWallet: FC<LoginWalletProps> = (props): ReactElement => {
                <Language language={props.language} id="Balance"/>
              </Grid>
              <Grid item xs={8}>
-               {props.addressStatus.balance} ETH
+               {parseFloat(props.addressStatus.balance.toFixed(5))} ETH
              </Grid>
            </Grid>
            <Grid>

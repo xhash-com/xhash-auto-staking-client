@@ -2,7 +2,7 @@ import WalletConnect from "@walletconnect/client";
 import {IInternalEvent} from "@walletconnect/types";
 import {Network} from "../react/types";
 import {IAppState} from "./common/type";
-import {etherscanGetBalance, generateTx, getErrorMsg} from "./common/method";
+import {etherscanGetBalance, generateTx, generateTx_All, getErrorMsg} from "./common/method";
 
 const INITIAL_STATE: IAppState = {
   connector: null,
