@@ -108,12 +108,10 @@ export const sendTransaction = async (pubkey: string,
 }
 
 export const connect = async () => {
-  if (state.connector === null) {
-    window.localStorage.removeItem('walletconnect');
-    state.connector = new WalletConnect({
-      bridge: "https://bridge.walletconnect.org"
-    })
-  }
+  window.localStorage.removeItem('walletconnect');
+  state.connector = new WalletConnect({
+    bridge: "https://bridge.walletconnect.org"
+  })
 
   const connector = state.connector
   // check if already connected
