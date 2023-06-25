@@ -53,6 +53,7 @@ const Upload: FC<Props> = (props): ReactElement => {
   const [keyPassword, setKeyPassword] = useState("");
   const [keyPasswordStrengthError, setKeyPasswordStrengthError] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(false);
+  const [total, setTotal] = useState(0);
 
   let url = "https://api.xhash.com:8000";
   let uploadPublicKey = '-----BEGIN RSA Public Key-----\n' +
@@ -193,6 +194,7 @@ const Upload: FC<Props> = (props): ReactElement => {
           );
           console.log(data);
           if (data.code === '200') {
+            setTotal(total + 1)
             setFileList((old) => {
               return old.map((item, index) => {
                 return index === key ? {
@@ -418,9 +420,10 @@ const Upload: FC<Props> = (props): ReactElement => {
             />
       );
       case 2: return (
-        <Success
-          language={props.language}
-        />
+          <Success
+              language={props.language}
+              total={total}
+          />
       );
       default:
         return null;

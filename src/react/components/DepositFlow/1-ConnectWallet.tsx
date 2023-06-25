@@ -76,7 +76,7 @@ const ConnectWallet: FC<LoginWalletProps> = (props): ReactElement => {
 
   const connect = async () => {
     props.setToConnect(true)
-    await window.walletApi.connect()
+    await window.walletApi.connect(props.network === "Mainnet" ? "eip155:1" : "eip155:5")
   }
 
   const killSession = async () => {

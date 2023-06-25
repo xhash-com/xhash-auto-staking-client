@@ -1,8 +1,8 @@
-import { Grid, TextField, Typography } from "@material-ui/core";
-import React, { FC, ReactElement, useState, Dispatch, SetStateAction } from "react";
+import {Grid, TextField, Typography} from "@material-ui/core";
+import React, {Dispatch, FC, ReactElement, SetStateAction, useState} from "react";
 import styled from "styled-components";
 import ValidatingMnemonic from './MnemonicImportFlow/1-ValidatingMnemonic';
-import { errors, MNEMONIC_LENGTH } from "../constants";
+import {MNEMONIC_LENGTH} from "../constants";
 import StepNavigation from './StepNavigation';
 import {LanguageEnum} from "../types";
 import {Language, LanguageFunc} from "../language/Language";
@@ -71,20 +71,21 @@ const MnemonicImport: FC<Props> = (props): ReactElement => {
   const content = () => {
     switch(step) {
       case 0: return (
-        <TextField
-            id="mnemonic-input"
-            label={LanguageFunc("Type_Your_Secret_Recovery_Phrase", props.language)}
-            multiline
-            fullWidth
-            rows={4}
-            variant="outlined"
-            color="primary"
-            autoFocus
-            error={mnemonicError}
-            helperText={mnemonicErrorMsg}
-            value={props.mnemonic}
-            onChange={updateInputMnemonic}
-            onKeyDown={handleKeyDown}/>
+          <TextField
+              id="mnemonic-input"
+              label={LanguageFunc("Type_Your_Secret_Recovery_Phrase", props.language)}
+              multiline
+              fullWidth
+              minRows={4}
+              maxRows={4}
+              variant="outlined"
+              color="primary"
+              autoFocus
+              error={mnemonicError}
+              helperText={mnemonicErrorMsg}
+              value={props.mnemonic}
+              onChange={updateInputMnemonic}
+              onKeyDown={handleKeyDown}/>
       );
       case 1: return (
         <ValidatingMnemonic

@@ -1,8 +1,22 @@
-import WalletConnect from "@walletconnect/client";
-import {IInternalEvent} from "@walletconnect/types";
 import {Network} from "../react/types";
-import {IAppState} from "./common/type";
+import {DEFAULT_EIP155_METHODS, IAppState} from "./common/type";
 import {etherscanGetBalance, generateTx, generateTx_All, getErrorMsg} from "./common/method";
+import {getAppMetadata} from "@walletconnect/utils";
+import Client from "@walletconnect/sign-client";
+import {EngineTypes, SessionTypes} from "@walletconnect/types";
+
+const DEFAULT_APP_METADATA = {
+  name: "XHash Auto Staking Client",
+  description: "XHash Auto Staking Client",
+  url: "https://github.com/xhash-com/xhash-auto-staking-client",
+  icons: ["https://raw.githubusercontent.com/xhash-com/xhash-auto-staking-client/main/static/xhash.png"],
+};
+
+const clientInitOptions = {
+  relayUrl: "wss://relay.walletconnect.com",
+  projectId: "",
+  metadata: getAppMetadata() || DEFAULT_APP_METADATA,
+}
 
 const INITIAL_STATE: IAppState = {
   connector: null,
@@ -15,6 +29,8 @@ const INITIAL_STATE: IAppState = {
   assets: false,
   balance: 0,
   timer: null,
+  session: null,
+  fullChainId: "eip155:1",
 };
 
 const state: IAppState = {...INITIAL_STATE};
@@ -42,22 +58,27 @@ export const sendTransaction_All = async (pubkeys: string[],
   }
 
   if (state.connector) {
-    await
-        state.connector
-            .sendTransaction(tx)
-            .then((result) => {
-              // Returns transaction id (hash)
-              console.log(result);
-              returnResult.result = true
-              returnResult.txHash = result
-            })
-            .catch((error) => {
-              // Error returned when rejected
-              console.log(error);
+    await state.connector.request<string>({
+      topic: state.session!.topic,
+      chainId: state.fullChainId,
+      request: {
+        method: DEFAULT_EIP155_METHODS.ETH_SEND_TRANSACTION,
+        params: [tx],
+      }
+    })
+        .then((result) => {
+          // Returns transaction id (hash)
+          console.log(result);
+          returnResult.result = true
+          returnResult.txHash = result
+        })
+        .catch((error) => {
+          // Error returned when rejected
+          console.error(error);
 
-              returnResult.result = false
-              returnResult.msg = getErrorMsg(String(error))
-            });
+          returnResult.result = false
+          returnResult.msg = getErrorMsg(String(error))
+        });
   }
 
   return returnResult;
@@ -85,132 +106,122 @@ export const sendTransaction = async (pubkey: string,
     msg: ""
   }
 
-  if (state.connector){
+  if (state.connector) {
     await
-      state.connector
-        .sendTransaction(tx)
-        .then((result) => {
-          // Returns transaction id (hash)
-          console.log(result);
-          returnResult.result = true
-          returnResult.txHash = result
+        state.connector.request<string>({
+          topic: state.session!.topic,
+          chainId: state.fullChainId,
+          request: {
+            method: DEFAULT_EIP155_METHODS.ETH_SEND_TRANSACTION,
+            params: [tx],
+          }
         })
-        .catch((error) => {
-          // Error returned when rejected
-          console.log(error);
+            .then((result) => {
+              // Returns transaction id (hash)
+              console.log(result);
+              returnResult.result = true
+              returnResult.txHash = result
+            })
+            .catch((error) => {
+              // Error returned when rejected
+              console.error(error);
 
-          returnResult.result = false
-          returnResult.msg = getErrorMsg(String(error))
-        });
+              returnResult.result = false
+              returnResult.msg = getErrorMsg(String(error))
+            });
   }
 
   return returnResult;
 }
 
-export const connect = async () => {
-  window.localStorage.removeItem('walletconnect');
-  state.connector = new WalletConnect({
-    bridge: "https://bridge.walletconnect.org"
-  })
+export const connect = async (chain: string) => {
+  try {
+    if (state.connector) {
+      try {
+        await state.connector.disconnect(<EngineTypes.DisconnectParams>{reason: {}, topic: state.session!.topic})
+      } catch (e) {
+        console.log(e)
+      }
 
-  const connector = state.connector
-  // check if already connected
+      await resetApp();
+    }
 
-  if (!connector.connected) {
-    await connector.createSession()
+
+    state.connector = await Client.init(clientInitOptions);
+
+    const _client = state.connector
+
+    const {uri, approval} = await _client.connect({
+      // Provide the namespaces and chains (e.g. `eip155` for EVM-based chains) we want to use in this session.
+      requiredNamespaces: {
+        eip155: {
+          methods: [
+            "eth_sendTransaction"
+          ],
+          chains: [chain],
+          events: ["chainChanged", "accountsChanged"],
+        },
+      },
+    });
+    if (uri) {
+      state.uri = uri
+
+      const _session = await approval()
+
+      await onConnect(_session)
+
+      await _subscribeToEvents();
+    }
+  } catch (e) {
+    console.log(e)
   }
-
-  await subscribeToEvents()
-
-  state.uri = connector.uri
 }
 
-const subscribeToEvents = () => {
+const _subscribeToEvents = () => {
   if (state.connector === null) {
     return
   }
 
-  state.connector.on("session_update", async (error, payload) => {
-    console.log(`connector.on("session_update")`)
+  const _client = state.connector
 
-    if (error) {
-      throw error
-    }
-
-    const { chainId, accounts } = payload.params[0];
-    onSessionUpdate(accounts, chainId)
+  _client.on("session_ping", (args) => {
+    console.log("EVENT", "session_ping", args);
   });
 
-  state.connector.on("session_request", async (error, payload) => {
-    console.log(`connector.on("session_request")`)
-
-    if (error) {
-      throw error
-    }
+  _client.on("session_event", (args) => {
+    console.log("EVENT", "session_event", args);
   });
 
-  state.connector.on("wc_sessionRequest", async (error, payload) => {
-    console.log(`connector.on("wc_sessionRequest")`)
-
-    if (error) {
-      throw error;
-    }
+  _client.on("session_update", ({topic, params}) => {
+    console.log("EVENT", "session_update", {topic, params});
+    const {namespaces} = params;
+    const _session = _client.session.get(topic);
+    const updatedSession = {..._session, namespaces};
+    onConnect(updatedSession);
   });
 
-  state.connector.on("wc_sessionUpdate", async (error, payload) => {
-    console.log(`connector.on("wc_sessionUpdate")`);
-    console.log(payload)
-    state.balance = 0
-
-    if (error) {
-      throw error;
-    }
-  })
-
-  state.connector.on("connect", (error, payload) => {
-    console.log(`connector.on("connect")`)
-    if (error) {
-      throw error
-    }
-    if (!state.connected) {
-      console.log(state)
-      onConnect(payload)
-    }
+  _client.on("session_delete", async () => {
+    console.log("EVENT", "session_delete");
+    await onDisconnect();
   });
-
-  state.connector.on("disconnect", (error, payload) => {
-    console.log(`connector.on("disconnect")`)
-
-    if (error) {
-      throw error
-    }
-
-    onDisconnect()
-  });
-
-  if (state.connector.connected) {
-    const { chainId, accounts } = state.connector
-    const address = accounts[0]
-    state.connected = true,
-    state.chainId = chainId,
-    state.accounts = accounts,
-    state.address = address,
-    onSessionUpdate(accounts, chainId)
-  }
 }
 
 export const killSession = async () => {
+  const chian = state.fullChainId
+
   const connector = state.connector
   console.log(connector)
   if (connector) {
     try {
-      await connector.killSession()
+      await connector.disconnect(<EngineTypes.DisconnectParams>{reason: {}, topic: state.session!.topic})
     } catch (e) {
       console.log(e)
     }
   }
 
   await resetApp();
+
+  await connect(chian)
 };
 
 const resetApp = async () => {
@@ -222,16 +233,22 @@ const resetApp = async () => {
   state.accounts = []
   state.address = ""
   state.assets = false
-
-  await connect()
+  state.session = null
 };
 
-const onConnect = async (payload: IInternalEvent) => {
-  const {chainId, accounts} = payload.params[0];
-  const address = accounts[0]
+const onConnect = async (_session: SessionTypes.Struct) => {
+  const allNamespaceAccounts = Object.values(_session.namespaces)
+      .map((namespace) => namespace.accounts)
+      .flat();
+  const allNamespaceChains = Object.keys(_session.namespaces);
+  const account = allNamespaceAccounts[0]
+  const [namespace, reference, address] = account.split(":");
+  state.session = _session
   state.connected = true
-  state.chainId = chainId
-  state.accounts = accounts
+  state.fullChainId = `${namespace}:${reference}`
+  //debug
+  state.chainId = Number(reference)
+  state.accounts = allNamespaceAccounts
   state.address = address
 };
 
@@ -254,13 +271,6 @@ export const getWalletStatus = () => {
 
 const onDisconnect = async () => {
   await resetApp();
-};
-
-const onSessionUpdate = async (accounts: string[], chainId: number) => {
-  const address = accounts[0]
-  state.chainId = chainId
-  state.accounts = accounts
-  state.address = address
 };
 
 export const cleanGetAssets = () => {

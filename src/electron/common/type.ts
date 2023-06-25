@@ -1,4 +1,5 @@
-import WalletConnect from "@walletconnect/client";
+import Client from "@walletconnect/sign-client";
+import {SessionTypes} from "@walletconnect/types";
 
 export interface IAssetData {
   symbol: string;
@@ -59,7 +60,7 @@ export interface IGasPrices {
 }
 
 export interface IAppState {
-  connector: WalletConnect | null;
+  connector: Client | null;
   fetching: boolean;
   connected: boolean;
   chainId: number;
@@ -69,6 +70,8 @@ export interface IAppState {
   assets: boolean;
   balance: number;
   timer: NodeJS.Timer | null;
+  session: SessionTypes.Struct | null;
+  fullChainId: string;
 }
 
 export interface Tx {
@@ -76,4 +79,12 @@ export interface Tx {
   to: string,
   data: string,
   value: string
+}
+
+export enum DEFAULT_EIP155_METHODS {
+  ETH_SEND_TRANSACTION = "eth_sendTransaction",
+  ETH_SIGN_TRANSACTION = "eth_signTransaction",
+  ETH_SIGN = "eth_sign",
+  PERSONAL_SIGN = "personal_sign",
+  ETH_SIGN_TYPED_DATA = "eth_signTypedData",
 }

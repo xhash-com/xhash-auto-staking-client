@@ -3,6 +3,7 @@ import axios, {AxiosInstance} from "axios";
 import {Network} from "../../react/types";
 import {generatedDataForDepositer} from "./depositer";
 import BigNumber from "bignumber.js";
+import {ProposalTypes} from "@walletconnect/types";
 
 const timers: NodeJS.Timer[] = []
 const apiKeyToken = 'A6139HD6GFIYGTH5HXD468K6AWCW96W6RU'
@@ -65,7 +66,6 @@ export const generateTx = (
     amount: number,
     network: Network): Tx => {
   const to = network === Network.GOERLI ? "0x35199FeFC3c638E9c64211E42d592509D01604b3" : "0x00000000219ab540356cBB839Cbe05303d7705Fa";
-  debugger
   return {
     from: address,
     to: to,
@@ -172,3 +172,135 @@ export const etherscanGetBalance = async (address: string, network: Network): Pr
 export const pre0x = (param: string): string => {
   return param.indexOf('0x') === 0 ? param : `0x${param}`;
 }
+
+export const getRequiredNamespaces = (
+    chains: string[]
+): ProposalTypes.RequiredNamespaces => {
+  const selectedNamespaces = getNamespacesFromChains(chains);
+  console.log("selected namespaces:", selectedNamespaces);
+
+  return Object.fromEntries(
+      selectedNamespaces.map((namespace) => [
+        namespace,
+        {
+          methods: getSupportedMethodsByNamespace(namespace),
+          chains: chains.filter((chain) => chain.startsWith(namespace)),
+          events: getSupportedEventsByNamespace(namespace) as any[],
+        },
+      ])
+  );
+};
+
+export enum DEFAULT_EIP155_METHODS {
+  ETH_SEND_TRANSACTION = "eth_sendTransaction",
+  ETH_SIGN_TRANSACTION = "eth_signTransaction",
+  ETH_SIGN = "eth_sign",
+  PERSONAL_SIGN = "personal_sign",
+  ETH_SIGN_TYPED_DATA = "eth_signTypedData",
+}
+
+export enum DEFAULT_COSMOS_METHODS {
+  COSMOS_SIGN_DIRECT = "cosmos_signDirect",
+  COSMOS_SIGN_AMINO = "cosmos_signAmino",
+}
+
+export enum DEFAULT_SOLANA_METHODS {
+  SOL_SIGN_TRANSACTION = "solana_signTransaction",
+  SOL_SIGN_MESSAGE = "solana_signMessage",
+}
+
+export enum DEFAULT_POLKADOT_METHODS {
+  POLKADOT_SIGN_TRANSACTION = "polkadot_signTransaction",
+  POLKADOT_SIGN_MESSAGE = "polkadot_signMessage",
+}
+
+export enum DEFAULT_NEAR_METHODS {
+  NEAR_SIGN_IN = "near_signIn",
+  NEAR_SIGN_OUT = "near_signOut",
+  NEAR_GET_ACCOUNTS = "near_getAccounts",
+  NEAR_SIGN_AND_SEND_TRANSACTION = "near_signAndSendTransaction",
+  NEAR_SIGN_AND_SEND_TRANSACTIONS = "near_signAndSendTransactions",
+}
+
+export enum DEFAULT_ELROND_METHODS {
+  ELROND_SIGN_TRANSACTION = "erd_signTransaction",
+  ELROND_SIGN_TRANSACTIONS = "erd_signTransactions",
+  ELROND_SIGN_MESSAGE = "erd_signMessage",
+  ELROND_SIGN_LOGIN_TOKEN = "erd_signLoginToken",
+}
+
+export enum DEFAULT_TRON_METHODS {
+  TRON_SIGN_TRANSACTION = 'tron_signTransaction',
+  TRON_SIGN_MESSAGE = 'tron_signMessage'
+}
+
+export enum DEFAULT_EIP_155_EVENTS {
+  ETH_CHAIN_CHANGED = "chainChanged",
+  ETH_ACCOUNTS_CHANGED = "accountsChanged",
+}
+
+export enum DEFAULT_COSMOS_EVENTS {}
+
+export enum DEFAULT_SOLANA_EVENTS {}
+
+export enum DEFAULT_POLKADOT_EVENTS {}
+
+export enum DEFAULT_NEAR_EVENTS {}
+
+export enum DEFAULT_ELROND_EVENTS {}
+
+export enum DEFAULT_TRON_EVENTS {}
+
+export const getSupportedEventsByNamespace = (namespace: string) => {
+  switch (namespace) {
+    case "eip155":
+      return Object.values(DEFAULT_EIP_155_EVENTS);
+    case "cosmos":
+      return Object.values(DEFAULT_COSMOS_EVENTS);
+    case "solana":
+      return Object.values(DEFAULT_SOLANA_EVENTS);
+    case "polkadot":
+      return Object.values(DEFAULT_POLKADOT_EVENTS);
+    case "near":
+      return Object.values(DEFAULT_NEAR_EVENTS);
+    case "elrond":
+      return Object.values(DEFAULT_ELROND_EVENTS);
+    case "tron":
+      return Object.values(DEFAULT_TRON_EVENTS);
+    default:
+      throw new Error(`No default events for namespace: ${namespace}`);
+  }
+};
+
+export const getSupportedMethodsByNamespace = (namespace: string) => {
+  switch (namespace) {
+    case "eip155":
+      return Object.values(DEFAULT_EIP155_METHODS);
+    case "cosmos":
+      return Object.values(DEFAULT_COSMOS_METHODS);
+    case "solana":
+      return Object.values(DEFAULT_SOLANA_METHODS);
+    case "polkadot":
+      return Object.values(DEFAULT_POLKADOT_METHODS);
+    case "near":
+      return Object.values(DEFAULT_NEAR_METHODS);
+    case "elrond":
+      return Object.values(DEFAULT_ELROND_METHODS);
+    case 'tron':
+      return Object.values(DEFAULT_TRON_METHODS);
+    default:
+      throw new Error(`No default methods for namespace: ${namespace}`);
+  }
+};
+
+export const getNamespacesFromChains = (chains: string[]) => {
+  const supportedNamespaces: string[] = [];
+  chains.forEach((chainId) => {
+    const [namespace] = chainId.split(":");
+    if (!supportedNamespaces.includes(namespace)) {
+      supportedNamespaces.push(namespace);
+    }
+  });
+
+  return supportedNamespaces;
+};

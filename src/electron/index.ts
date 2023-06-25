@@ -3,11 +3,11 @@
  * This typescript file contains the Electron app which renders the React app.
  */
 
-import { BrowserWindow, app, globalShortcut, ipcMain, dialog, clipboard } from "electron";
+import {app, BrowserWindow, clipboard, dialog, ipcMain} from "electron";
 import path from "path";
 
-import { accessSync, constants } from "fs";
-import { OpenDialogOptions } from "electron/common";
+import {accessSync, constants} from "fs";
+import {OpenDialogOptions} from "electron/common";
 
 /**
  * VERSION and COMMITHASH are set by the git-revision-webpack-plugin module.
@@ -25,8 +25,8 @@ const doesFileExist = (filename: string): boolean => {
 };
 
 app.on("ready", () => {
-  var iconPath = path.join("static", "icon.png");
-  const bundledIconPath = path.join(process.resourcesPath, "..", "static", "icon.png");
+  let iconPath = path.join("static", "xhash.png");
+  const bundledIconPath = path.join(process.resourcesPath, "..", "static", "xhash.png");
 
   if (doesFileExist(bundledIconPath)) {
     iconPath = bundledIconPath;
@@ -42,6 +42,7 @@ app.on("ready", () => {
     height: 750,
     icon: iconPath,
     title: title,
+    frame: true,
 
     webPreferences: {
       nodeIntegration: false,
@@ -54,6 +55,7 @@ app.on("ready", () => {
    * Hide the default menu bar that comes with the browser window
    */
   window.setMenuBarVisibility(false);
+  window.removeMenu();
 
   /**
    * Set the Permission Request Handler to deny all permissions requests

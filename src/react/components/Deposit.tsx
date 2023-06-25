@@ -96,7 +96,6 @@ const Deposit: FC<Props> = (props): ReactElement => {
         network = Network.MAINNET
         break
     }
-
     addressStatusUpdater(wallet.address, wallet.balance / Math.pow(10, 9), network)
     connectStatusUpdater(wallet.connected, wallet.assets, wallet.fetching)
     setWalletErrorMsg(props.network !== network ? LanguageFunc("Wrong_Network", props.language) + props.network : '')

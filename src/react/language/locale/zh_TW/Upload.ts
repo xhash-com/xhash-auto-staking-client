@@ -16,7 +16,9 @@ const Upload = {
   'upload_3005': '驗證者狀態不允許',
   'upload_3006': '服務停止',
   'upload_3007': '文件太大',
-  'upload_3008': '驗證者數量達到限制'
+  'upload_3008': '驗證者數量達到限制',
+  'upload_su_1': '總共上傳',
+  'upload_su_2': 'keystore文件',
 }
 
 export default Upload

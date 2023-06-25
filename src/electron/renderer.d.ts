@@ -33,7 +33,7 @@ export interface IEncryptAPI {
 }
 
 export interface IWalletAPI {
-  connect: () => void,
+  connect: (string) => void,
   killSession: () => void,
   getWalletStatus: () => any,
   sendTransaction: (pubkey: string, withdrawal_credentials: string, signature: string, deposit_data_root: string, amount: number, network: Network) => any,

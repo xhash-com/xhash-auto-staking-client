@@ -16,7 +16,9 @@ const Upload = {
   'upload_3005': 'Validator Status No Allow',
   'upload_3006': 'Xhash Staking Server Stop',
   'upload_3007': 'File Too Large',
-  'upload_3008': 'Validator reached the limit'
+  'upload_3008': 'Validator reached the limit',
+  'upload_su_1': 'total uploads',
+  'upload_su_2': 'keystore file',
 }
 
 export default Upload

@@ -79,6 +79,7 @@ yarn buildcli
 ```
 
 ### macOS 10.15.1 and later
+
 在終端中執行所有這些命令來設置開發環境。有時可能會提示安裝“命令行開發人員工具”，請安裝。
 
 ```console
@@ -109,14 +110,19 @@ yarn buildcli
 ```
 
 ## 啟動 xhash-auto-staking-client
+
+在 [WalletConnect](https://cloud.walletconnect.com/) 上創建您的 ProjectId 並在 `src/electron/WalletApi.ts`
+中使用您自己的替換 `clientInitOptions.projectId`。
+
 在存儲庫目錄下執行以下命令:
 
 - `yarn build`
-    - `yarn build:watch` (will reload build on changes)
-    - _In order to get them to show in the app press `ctrl+r` or `cmd+r` once the app is started._
+  - `yarn build:watch` (will reload build on changes)
+  - _In order to get them to show in the app press `ctrl+r` or `cmd+r` once the app is started._
 - `yarn start`
 
 ## 開發者工具運行診斷
+
 使用 `Ctrl` + `Shift` + `I` 打開開發者工具
 
 ## 打包

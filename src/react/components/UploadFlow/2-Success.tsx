@@ -21,6 +21,7 @@ const InfoLabel = styled.span`
 
 type SuccessProps = {
   language: LanguageEnum,
+  total: number,
 }
 
 const Success: FC<SuccessProps> = (props): ReactElement => {
@@ -31,11 +32,18 @@ const Success: FC<SuccessProps> = (props): ReactElement => {
         <Typography variant="h1">
           <Language language={props.language} id="Success"/>
         </Typography>
+        <Typography variant="h5">
+          <Language language={props.language} id="upload_su_1"/>
+          {` ${props.total} `}
+          <Language language={props.language} id="upload_su_2"/>
+        </Typography>
       </Grid>
       <Links>
         <InfoLabel>XHash:</InfoLabel>
-        <button onClick={() => window.electronAPI.shellOpenExternal("https://www.xhash.com/stakingdashboard")}>https://www.xhash.com</button>
-        <br />
+        <button
+            onClick={() => window.electronAPI.shellOpenExternal("https://www.xhash.com/stakingdashboard")}>https://www.xhash.com
+        </button>
+        <br/>
         <InfoLabel>{LanguageFunc("Email", props.language)}:</InfoLabel>admin@xhash.com
       </Links>
     </StyledMuiContainer>

@@ -109,14 +109,19 @@ yarn buildcli
 ```
 
 ## Start xhash-auto-staking-client
+
+Create your ProjectId on [WalletConnect](https://cloud.walletconnect.com/) and replace the `clientInitOptions.projectId`
+in `src/electron/WalletApi.ts` with your own.
+
 Run the following commands in the repository directory:
 
 - `yarn build`
-    - `yarn build:watch` (will reload build on changes)
-    - _In order to get them to show in the app press `ctrl+r` or `cmd+r` once the app is started._
+  - `yarn build:watch` (will reload build on changes)
+  - _In order to get them to show in the app press `ctrl+r` or `cmd+r` once the app is started._
 - `yarn start`
 
 ## To run diagnostics
+
 To open dev tools when in XHash Staking Cli use `Ctrl` + `Shift` + `I`
 
 ## Bundling
